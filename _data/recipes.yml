@@ -35,13 +35,7 @@
   post: cnn
   hint: 입력 → 합성곱 → 풀링(종류무관) → 완전연결 순이면 인식
 
-- id: rnn
-  label: RNN (되먹임 라인)
-  loose: [input, recurrent, fc]
-  recurrent: true
-  post: rnn-net
-  hint: 입력 → 순환 셀(RNN/LSTM) → 완전연결 + ↩ 되먹임 ON
-
+# 순환형 — 구체적인 것(다층·LSTM)을 먼저, 일반 RNN 을 뒤에 둔다 (앞에서부터 매칭).
 - id: deep-rnn
   label: 다층 RNN
   loose: [input, recurrent, recurrent, fc]
@@ -55,3 +49,10 @@
   recurrent: true
   post: lstm
   hint: 입력 → LSTM → 완전연결 + ↩ 되먹임 ON (게이트가 달린 순환 라인)
+
+- id: rnn
+  label: RNN (되먹임 라인)
+  loose: [input, recurrent, fc]
+  recurrent: true
+  post: rnn-net
+  hint: 입력 → 순환 셀(RNN/LSTM) → 완전연결 + ↩ 되먹임 ON
