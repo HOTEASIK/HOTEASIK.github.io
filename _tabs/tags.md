@@ -1,0 +1,7 @@
+---
+layout: tags
+icon: fas fa-tags
+order: 5
+title: 태그
+permalink: /tags/
+---
