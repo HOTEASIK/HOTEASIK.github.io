@@ -13,16 +13,17 @@
   font-size: 0.9rem;
 }
 
-/* ---- 대시보드 ---- */
+/* ---- 대시보드 = 칸반 보드 ---- */
 .lab-dashboard {
   border: 1px solid var(--lab-line);
   border-radius: 10px;
   background: var(--lab-card);
-  padding: 0.75rem 1rem 1rem;
+  padding: 0.75rem;
 }
 .lab-dashboard-title {
   font-weight: 600;
-  margin-bottom: 0.5rem;
+  margin: 0 0 0.6rem;
+  padding: 0 0.25rem;
 }
 .lab-dashboard-title small {
   font-weight: 400;
@@ -30,51 +31,86 @@
   margin-left: 0.35rem;
 }
 
-/* 층 = 세로 블록 (이름 위, 내용 아래) */
-.lab-layer {
-  display: block;
-  padding: 0.7rem 0.2rem;
-  border-top: 1px dashed var(--lab-line);
+/* 보드: 칼럼을 가로로, 넘치면 가로 스크롤 */
+.lab-board {
+  display: flex;
+  gap: 0.6rem;
+  overflow-x: auto;
+  padding-bottom: 0.4rem;
+  scroll-snap-type: x proximity;
+  overscroll-behavior-x: contain;
 }
-.lab-layer:first-of-type { border-top: 0; }
-.lab-layer.is-wide { background: color-mix(in srgb, var(--lab-accent) 5%, transparent); border-radius: 8px; }
 
-.lab-layer-name {
-  font-weight: 700;
-  font-size: 0.9rem;
-  color: var(--heading-color, inherit);
-  margin-bottom: 0.5rem;
-}
-.lab-layer-kinds { display: flex; flex-direction: column; gap: 0.7rem; }
-.lab-kind-name {
-  font-size: 0.75rem;
-  color: var(--text-muted-color, #888);
-  margin-bottom: 0.3rem;
-}
-/* 칩 = 위에서 아래로 한 줄에 하나씩 */
-.lab-chips {
+/* 칼럼 = 층 하나 */
+.lab-board-col {
+  flex: 0 0 13rem;
+  width: 13rem;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 0.35rem;
+  max-height: 62vh;
+  background: #0a0a12;
+  border: 1px solid var(--lab-line);
+  border-radius: 8px;
+  scroll-snap-align: start;
+}
+.lab-board-col.is-wide { flex-basis: 15.5rem; width: 15.5rem; }
+
+.lab-board-col-head {
+  flex-shrink: 0;
+  padding: 0.5rem 0.7rem;
+  font-weight: 700;
+  font-size: 0.82rem;
+  color: var(--heading-color, inherit);
+  background: linear-gradient(#13131f, #0e0e18);
+  border-bottom: 1px solid var(--lab-line);
+  border-radius: 8px 8px 0 0;
+}
+.lab-col-count {
+  float: right;
+  font-weight: 400;
+  color: var(--text-muted-color, #888);
+  font-family: var(--mono-font, monospace);
 }
 
+.lab-board-col-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.5rem;
+  overflow-y: auto;
+}
+
+.lab-board-kind {
+  font-size: 0.66rem;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--text-muted-color, #888);
+  font-family: var(--mono-font, monospace);
+  margin: 0.4rem 0 0.05rem;
+}
+.lab-board-kind:first-child { margin-top: 0; }
+
+/* 카드 (드래그 대상) */
 .lab-chip {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 0.35rem;
-  padding: 0.28rem 0.6rem;
-  font-size: 0.82rem;
-  line-height: 1.2;
+  gap: 0.4rem;
+  width: 100%;
+  padding: 0.4rem 0.55rem;
+  font-size: 0.8rem;
+  line-height: 1.25;
+  text-align: left;
   color: var(--text-color, inherit);
   background: var(--main-bg, #fafafa);
   border: 1px solid var(--lab-line);
-  border-radius: 999px;
+  border-left: 3px solid var(--lab-line);
+  border-radius: 6px;
   cursor: grab;
 }
-.lab-chip:hover { border-color: var(--lab-accent); color: var(--lab-accent); }
+.lab-chip:hover { border-color: var(--lab-accent); color: var(--lab-accent); transform: translateX(2px); }
 .lab-chip:active { cursor: grabbing; }
-.lab-chip-icon { width: 16px; height: 16px; object-fit: contain; }
+.lab-chip-label { white-space: normal; }
+.lab-chip-icon { width: 16px; height: 16px; object-fit: contain; flex-shrink: 0; }
 .lab-chip-dot {
   width: 9px; height: 9px; border-radius: 50%;
   background: var(--text-muted-color, #999);
@@ -356,3 +392,32 @@ body[sidebar-display] .lab-dock .lab-panel { display: none; }
 .lab-result.is-hit { color: var(--neon-cyan, #22e0ff); }
 .lab-result.is-hit a { text-shadow: 0 0 10px rgb(34 224 255 / 45%); }
 .lab-result.is-miss { color: var(--neon-magenta, #ff3bd4); }
+
+/* ---- 칸반 칼럼 레이어별 강조 ---- */
+.lab-board-col { --col: var(--neon-cyan, #22e0ff); }
+.lab-board-col[data-layer="input"]    { --col: #3b82f6; }
+.lab-board-col[data-layer="hidden"]   { --col: #f59e0b; }
+.lab-board-col[data-layer="output"]   { --col: #10b981; }
+.lab-board-col[data-layer="training"] { --col: #a855f7; }
+.lab-board-col[data-layer="eval"]     { --col: #14b8a6; }
+.lab-board-col[data-layer="concept"]  { --col: #ef4444; }
+.lab-board-col[data-layer="model"]    { --col: #64748b; }
+
+.lab-board-col-head {
+  border-bottom-color: color-mix(in srgb, var(--col) 55%, transparent);
+  box-shadow: inset 0 -2px 0 var(--col);
+}
+.lab-board-col .lab-chip { border-left-color: var(--col); }
+.lab-board-col.is-wide { background: color-mix(in srgb, var(--col) 7%, #0a0a12); }
+
+.lab-board::-webkit-scrollbar,
+.lab-board-col-body::-webkit-scrollbar { height: 8px; width: 8px; }
+.lab-board::-webkit-scrollbar-thumb,
+.lab-board-col-body::-webkit-scrollbar-thumb {
+  background: rgb(34 224 255 / 30%);
+  border-radius: 4px;
+}
+
+@media (max-width: 576px) {
+  .lab-board-col, .lab-board-col.is-wide { flex-basis: 11rem; width: 11rem; }
+}

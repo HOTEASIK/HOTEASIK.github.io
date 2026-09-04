@@ -79,10 +79,11 @@
     return icon + '<span class="lab-chip-label">' + esc(note.title) + '</span>';
   }
 
-  // ---- 대시보드 ----
+  // ---- 대시보드 (칸반 보드) ----
   function buildDashboard() {
     var wrap = el("div", "lab-dashboard");
-    wrap.appendChild(el("div", "lab-dashboard-title", "부품 · 개념 대시보드 <small>드래그해서 아래 작업대로</small>"));
+    wrap.appendChild(el("div", "lab-dashboard-title",
+      "부품 · 개념 보드 <small>칼럼에서 카드를 드래그해 아래 작업대로 · 카드 클릭 = 그 글</small>"));
 
     var groups = {};
     NOTES.forEach(function (n) {
@@ -92,24 +93,30 @@
       (groups[lay][k] = groups[lay][k] || []).push(n);
     });
 
+    var board = el("div", "lab-board");
+
     LAYER_ORDER.concat(Object.keys(groups).filter(function (l) { return LAYER_ORDER.indexOf(l) === -1; }))
       .forEach(function (lay) {
         if (!groups[lay]) return;
-        var row = el("div", "lab-layer" + (lay === "hidden" || lay === "eval" ? " is-wide" : ""));
-        row.appendChild(el("div", "lab-layer-name", esc(LAYER_LABEL[lay] || lay)));
-        var kindsWrap = el("div", "lab-layer-kinds");
+
+        var count = 0;
+        Object.keys(groups[lay]).forEach(function (k) { count += groups[lay][k].length; });
+
+        var col = el("div", "lab-board-col" + (lay === "hidden" || lay === "eval" ? " is-wide" : ""));
+        col.dataset.layer = lay;
+        col.appendChild(el("div", "lab-board-col-head",
+          esc(LAYER_LABEL[lay] || lay) + '<span class="lab-col-count">' + count + '</span>'));
+
+        var body = el("div", "lab-board-col-body");
         Object.keys(groups[lay]).forEach(function (k) {
-          var kg = el("div", "lab-kind");
-          if (k) kg.appendChild(el("div", "lab-kind-name", esc(KIND_LABEL[k] || k)));
-          var chips = el("div", "lab-chips");
-          groups[lay][k].forEach(function (n) { chips.appendChild(makeChip(n)); });
-          kg.appendChild(chips);
-          kindsWrap.appendChild(kg);
+          if (k) body.appendChild(el("div", "lab-board-kind", esc(KIND_LABEL[k] || k)));
+          groups[lay][k].forEach(function (n) { body.appendChild(makeChip(n)); });
         });
-        row.appendChild(kindsWrap);
-        wrap.appendChild(row);
+        col.appendChild(body);
+        board.appendChild(col);
       });
 
+    wrap.appendChild(board);
     return wrap;
   }
 
