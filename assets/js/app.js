@@ -155,10 +155,16 @@
       var item = document.createElement("div");
       item.className = "post-item" + (match ? "" : " is-dimmed");
       item.dataset.id = p.id;
+      item.draggable = true;
       item.innerHTML =
         '<div class="post-item-title">' + escapeHtml(p.title) + '</div>' +
         '<div class="post-item-meta">' + escapeHtml(p.date) + '</div>';
       item.addEventListener("click", function () { flyToAndOpen(p.id); });
+      item.addEventListener("dragstart", function (e) {
+        e.dataTransfer.setData("text/plain", JSON.stringify({ kind: "post", id: p.id }));
+        e.dataTransfer.effectAllowed = "copy";
+        e.stopPropagation();
+      });
       els.postList.appendChild(item);
     });
   }
@@ -290,7 +296,7 @@
 
     var dragging = false, lastX = 0, lastY = 0;
     els.canvasWrap.addEventListener("mousedown", function (e) {
-      if (e.target.closest(".card, .placed-part")) return;
+      if (e.target.closest(".card, .placed-part, .placed-folder, .placed-note")) return;
       dragging = true;
       lastX = e.clientX; lastY = e.clientY;
       els.canvasWrap.classList.add("is-dragging");
