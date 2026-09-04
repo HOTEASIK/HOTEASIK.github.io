@@ -416,6 +416,15 @@
 .factory-recent-list a { font-weight: 600; }
 .factory-recent-list .meta { display: block; font-size: 0.72rem; color: var(--text-muted-color, #889); font-family: var(--mono-font, monospace); }
 
+/* ---------- 중간 폭: 무대만 축소 (스카이라인 유지) ---------- */
+@media (min-width: 820px) and (max-width: 1150px) {
+  .factory-scene {
+    transform: scale(0.82);
+    transform-origin: bottom center;
+    margin-bottom: -2rem;
+  }
+}
+
 /* ---------- 반응형: 좁으면 카드 그리드 ---------- */
 @media (max-width: 819px) {
   .factory-sky { height: 16rem; }
