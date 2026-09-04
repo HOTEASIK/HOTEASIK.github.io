@@ -1094,6 +1094,26 @@ a { color: var(--accent); }
   line-height: 1.6;
 }
 
+.part-detail-link {
+  margin-top: 14px;
+}
+
+.part-detail-note-link {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--accent-dim);
+}
+
+.part-detail-note-link:hover {
+  color: #f0c878;
+  text-decoration-color: #f0c878;
+}
+
 .part-detail-hint {
   margin-top: 18px;
   font-size: 11px;

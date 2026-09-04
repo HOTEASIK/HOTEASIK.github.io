@@ -44,6 +44,7 @@
     els.partDetailIcon = document.getElementById("part-detail-icon");
     els.partDetailTitle = document.getElementById("part-detail-title");
     els.partDetailDesc = document.getElementById("part-detail-desc");
+    els.partDetailLink = document.getElementById("part-detail-link");
     els.graphSvg = document.getElementById("graph-svg");
   }
 
@@ -119,6 +120,7 @@
       category: meta.category || path,
       icon: PARTS_DIR + path + "/" + iconFile,
       desc: fm.body.trim(),
+      postId: meta.postId || null,
     };
   }
 
@@ -445,6 +447,21 @@
     els.partDetailIcon.src = p.icon;
     els.partDetailTitle.textContent = p.label;
     els.partDetailDesc.textContent = p.desc || "";
+
+    els.partDetailLink.innerHTML = "";
+    if (p.postId) {
+      var link = document.createElement("a");
+      link.className = "part-detail-note-link";
+      link.href = "#" + p.postId;
+      link.textContent = "노트에서 자세히 보기 →";
+      link.addEventListener("click", function (e) {
+        e.preventDefault();
+        closePartDetail();
+        if (window.Hoteasik && window.Hoteasik.openPost) window.Hoteasik.openPost(p.postId, null);
+      });
+      els.partDetailLink.appendChild(link);
+    }
+
     els.partDetail.classList.add("is-open");
     requestAnimationFrame(function () {
       els.partDetail.classList.add("is-visible");
@@ -558,6 +575,15 @@
         seenEdge[key] = true;
         edges.push({ a: "part:" + part.path, b: "post:" + recipe.postId, kind: "recipe" });
       });
+    });
+
+    // 부품 자신이 postId를 갖고 있으면(예: 완성 구조 부품) 그 글로 바로 연결
+    parts.forEach(function (part) {
+      if (!part.postId || !posts.some(function (pp) { return pp.id === part.postId; })) return;
+      var key = "part:" + part.path + "|post:" + part.postId;
+      if (seenEdge[key]) return;
+      seenEdge[key] = true;
+      edges.push({ a: "part:" + part.path, b: "post:" + part.postId, kind: "recipe" });
     });
 
     edges.forEach(function (e) {

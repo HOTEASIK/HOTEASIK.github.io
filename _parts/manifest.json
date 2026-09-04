@@ -30,6 +30,13 @@
       "children": [
         { "type": "part", "path": "output/pool" }
       ]
+    },
+    {
+      "type": "folder",
+      "label": "완성 구조",
+      "children": [
+        { "type": "part", "path": "architectures/cnn" }
+      ]
     }
   ]
 }
