@@ -1,0 +1,37 @@
+[
+  {
+    "id": "input",
+    "label": "입력",
+    "category": "input",
+    "icon": "assets/parts/images/input.svg",
+    "desc": "원본 이미지가 컨베이어에 처음 투입되는 자리. 모든 조립의 시작점."
+  },
+  {
+    "id": "conv",
+    "label": "합성곱",
+    "category": "conv",
+    "icon": "assets/parts/images/conv.svg",
+    "desc": "작은 필터(커널)를 굴려가며 이미지의 특징(선·모서리·질감)을 뽑아내는 톱니바퀴 장치."
+  },
+  {
+    "id": "avgpool",
+    "label": "평균 풀링",
+    "category": "pool",
+    "icon": "assets/parts/images/avgpool.svg",
+    "desc": "인접한 값들을 평균 내어 크기를 줄이는 압축 깔때기. LeNet-5가 즐겨 쓰는 방식."
+  },
+  {
+    "id": "pool",
+    "label": "풀링 계층",
+    "category": "pool",
+    "icon": "assets/parts/images/pool.svg",
+    "desc": "가장 강한 신호만 남기고 나머지를 걸러내는 체. 최대값만 골라내는 경우가 많음."
+  },
+  {
+    "id": "fc",
+    "label": "완전연결 계층",
+    "category": "fc",
+    "icon": "assets/parts/images/fc.svg",
+    "desc": "모든 톱니가 서로 맞물린 배선반. 뽑아낸 특징을 모아 최종 판단을 내림."
+  }
+]

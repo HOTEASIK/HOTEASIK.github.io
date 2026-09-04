@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HOTEASIK — 신경망 조립 공장</title>
+<meta name="description" content="부품을 컨베이어에 순서대로 올려 LeNet-5, CNN 같은 신경망 구조를 조립하는 스팀펑크 공장 블로그">
+<link rel="icon" href="data:,">
+<script defer src="https://cdn.jsdelivr.net/npm/marked@9.1.6/marked.min.js"></script>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<button class="sidebar-toggle" id="sidebar-toggle" aria-label="사이드바 열기">☰</button>
+
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <span class="brand-dot"></span>
+      <span class="brand-name">HOTEASIK</span>
+    </div>
+
+    <div class="search-box">
+      <input id="search" type="text" placeholder="검색 (제목 · 태그)" autocomplete="off">
+    </div>
+
+    <div class="parts-panel">
+      <div class="panel-title" style="border-top:none;padding-top:0;">부품 목록 — 드래그해서 배치, 클릭해서 살펴보기</div>
+      <div class="parts-grid" id="parts-grid"></div>
+    </div>
+
+    <div class="post-list-wrap">
+      <div class="panel-title">블로그 글</div>
+      <nav class="post-list" id="post-list">
+        <div class="post-list-empty">불러오는 중…</div>
+      </nav>
+    </div>
+
+    <div class="graph-panel">
+      <div class="graph-title">그래프 뷰</div>
+      <svg id="graph-svg" viewBox="0 0 240 170" preserveAspectRatio="xMidYMid meet"></svg>
+    </div>
+
+    <div class="sidebar-footer">
+      <a href="https://github.com/HOTEASIK/HOTEASIK.github.io" target="_blank" rel="noopener">GitHub ↗</a>
+    </div>
+  </aside>
+
+  <div class="main-column" id="main-column">
+    <main class="canvas-wrap" id="canvas-wrap">
+      <div class="canvas-inner" id="canvas-inner">
+        <svg class="edges" id="edges"></svg>
+        <div class="cards" id="cards"></div>
+        <div class="placed-parts" id="placed-parts"></div>
+      </div>
+
+      <div class="canvas-hint">스크롤 확대·축소 · 드래그 이동 · 카드 클릭으로 열기 · 부품은 작업대 아무 곳에나 드래그</div>
+
+      <div class="zoom-controls">
+        <button id="zoom-in" title="확대">＋</button>
+        <button id="zoom-reset" title="가운데로">◎</button>
+        <button id="zoom-out" title="축소">－</button>
+      </div>
+    </main>
+
+    <section class="assembly-bar" id="assembly-bar">
+      <div class="assembly-readout" id="assembly-readout">대기 중…</div>
+      <div class="assembly-track" id="assembly-track">
+        <span class="assembly-label">입력 ⟶</span>
+        <div class="assembly-slots" id="assembly-slots"></div>
+        <span class="assembly-label">⟶ 출력</span>
+      </div>
+      <button class="assembly-clear" id="assembly-clear">초기화</button>
+    </section>
+  </div>
+
+  <section class="reader" id="reader" aria-hidden="true">
+    <div class="reader-backdrop" id="reader-backdrop"></div>
+    <article class="reader-panel" id="reader-panel">
+      <button class="reader-close" id="reader-close" aria-label="닫기">✕</button>
+      <div class="reader-meta" id="reader-meta"></div>
+      <h1 id="reader-title"></h1>
+      <div class="reader-tags" id="reader-tags"></div>
+      <div class="reader-body" id="reader-body"></div>
+      <div class="reader-links" id="reader-links"></div>
+    </article>
+  </section>
+
+  <section class="part-detail" id="part-detail" aria-hidden="true">
+    <div class="part-detail-backdrop" id="part-detail-backdrop"></div>
+    <article class="part-detail-panel" id="part-detail-panel">
+      <button class="reader-close" id="part-detail-close" aria-label="닫기">✕</button>
+      <img class="part-detail-icon" id="part-detail-icon" alt="">
+      <h2 id="part-detail-title"></h2>
+      <div class="part-detail-desc" id="part-detail-desc"></div>
+      <div class="part-detail-hint">이 부품을 작업대나 컨베이어 벨트로 드래그해서 사용하세요.</div>
+    </article>
+  </section>
+</div>
+
+<script src="assets/js/app.js"></script>
+<script src="assets/js/factory.js"></script>
+</body>
+</html>
