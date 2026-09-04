@@ -196,6 +196,17 @@ a { color: var(--accent); }
   fill: var(--accent);
 }
 
+.graph-node.is-part circle {
+  fill: var(--rust);
+  opacity: 0.85;
+}
+
+.graph-node.is-part:hover circle,
+.graph-node.is-part.is-active circle {
+  fill: var(--accent-2);
+  opacity: 1;
+}
+
 .graph-node text {
   fill: var(--text-faint);
   font-size: 6px;
@@ -672,20 +683,17 @@ a { color: var(--accent); }
   margin-bottom: 4px;
 }
 
-.assembly-open-btn {
-  margin-top: 6px;
-  font-size: 11.5px;
-  background: var(--accent-dim);
-  color: #1a1204;
-  border: none;
-  border-radius: 6px;
-  padding: 4px 10px;
+.match-name-link {
   cursor: pointer;
-  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--accent-dim);
 }
 
-.assembly-open-btn:hover {
-  background: var(--accent);
+.match-name-link:hover,
+.match-name-link:focus-visible {
+  color: #f0c878;
+  text-decoration-color: #f0c878;
 }
 
 .assembly-track {

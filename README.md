@@ -3,47 +3,55 @@
 **스팀펑크 신경망 조립 공장** 테마 깃 블로그. 순수 HTML/CSS/JS, 빌드 도구 없음
 (Jekyll/Hugo/Node 불필요).
 
-- 사이드바 **부품 목록**(입력/합성곱/풀링/완전연결)을 캔버스(작업대)에 자유롭게 드래그 배치
+- 부품마다 **자기 폴더**(`_parts/<id>/`)를 가짐 — Obsidian 볼트처럼 폴더 하나 = 부품 하나
+- 사이드바 **부품 목록**을 캔버스(작업대)에 자유롭게 드래그 배치
+- 부품 폴더가 **그래프 뷰**에도 함께 배치됨 — 어느 아키텍처(글)에 쓰이는 부품인지 선으로 연결
 - 화면 하단 **컨베이어 벨트**에 부품을 왼쪽(입력)→오른쪽(출력) 순서로 올리면
   LeNet-5, CNN 같은 알려진 구조를 자동 인식 (화학 게임의 원소 조합 방식 참고)
-- 부품/글 목록을 클릭하면 각각 전용 창(캔버스)이 새로 열림
-- 글들은 Obsidian처럼 **그래프 뷰 · 백링크**로 서로 연결됨
+- 조립 결과(출력) 이름 자체가 링크 — **클릭하면 그 이름의 노트(글)로 바로 이동**
+- 부품/글을 클릭하면 각각 전용 창(캔버스)이 새로 열림
+- 글들도 Obsidian처럼 **그래프 뷰 · 백링크**로 서로 연결됨
 
 ## 구조
 
 ```
-index.html                 메인 셸 (사이드바 + 캔버스 + 컨베이어 + 리더 + 부품 상세)
-assets/css/style.css       스팀펑크(황동·녹슨철) 테마 스타일
-assets/js/app.js           글 로딩 · 캔버스 줌/팬 · 그래프 · 리더 로직
-assets/js/factory.js       부품 목록 · 드래그앤드롭 배치 · 컨베이어 조립/인식 로직
-assets/parts/parts.json    부품 카탈로그 (이미지로 커스텀 가능, 아래 참고)
-assets/parts/recipes.json  인식할 아키텍처 레시피 (LeNet-5, CNN…)
-assets/parts/images/*.svg  부품 아이콘 이미지
-_post/manifest.json        글 목록 (파일명 배열)
-_post/*.md                 글 (frontmatter + 마크다운 본문)
-.nojekyll                   GitHub Pages가 _post 폴더를 그대로 서빙하도록 함 (필수, 지우지 말 것)
+index.html              메인 셸 (사이드바 + 캔버스 + 컨베이어 + 리더 + 부품 상세)
+assets/css/style.css    스팀펑크(황동·녹슨철) 테마 스타일
+assets/js/app.js        글 로딩 · 캔버스 줌/팬 · 그래프 · 리더 로직
+assets/js/factory.js    부품 폴더 로딩 · 드래그앤드롭 배치 · 컨베이어 조립/인식 · 그래프 합치기
+_parts/manifest.json    부품 목록 (폴더 이름 배열)
+_parts/recipes.json     인식할 아키텍처 레시피 (LeNet-5, CNN…) · 그래프 연결선의 근거
+_parts/<id>/part.md     부품 하나 = 폴더 하나 (frontmatter + 설명)
+_parts/<id>/icon.svg    그 부품의 아이콘 (이미지로 커스텀 가능, 아래 참고)
+_post/manifest.json     글 목록 (파일명 배열)
+_post/*.md              글 (frontmatter + 마크다운 본문)
+.nojekyll                 GitHub Pages가 _post·_parts 폴더를 그대로 서빙하도록 함 (필수, 지우지 말 것)
 ```
 
-## 부품을 이미지로 커스텀하는 법
+## 부품 폴더 추가/커스텀하는 법
 
-1. 아이콘 이미지(svg/png 등)를 `assets/parts/images/`에 추가.
-2. `assets/parts/parts.json`에 항목 추가/수정:
+1. `_parts/` 아래에 새 폴더 생성, 예: `_parts/dropout/`
+2. 그 폴더에 아이콘 이미지 추가: `_parts/dropout/icon.png` (svg/png 등 원하는 형식)
+3. `_parts/dropout/part.md` 작성:
 
-   ```json
-   {
-     "id": "dropout",
-     "label": "드롭아웃",
-     "category": "fc",
-     "icon": "assets/parts/images/dropout.png",
-     "desc": "일부 연결을 무작위로 끊어 과적합을 막는 장치."
-   }
+   ```markdown
+   ---
+   id: dropout
+   label: 드롭아웃
+   category: fc
+   icon: icon.png
+   ---
+
+   일부 연결을 무작위로 끊어 과적합을 막는 장치.
    ```
 
-   - `id`: 레시피에서 참조할 고유 키
-   - `category`: 느슨한 인식(loosePattern)에 쓰이는 분류 (예: `conv`, `pool`, `fc`, `input`)
-   - `icon`: 원하는 이미지로 교체만 하면 목록·작업대·컨베이어 아이콘이 모두 바뀜
+   - `id`: 레시피(`sequence`)에서 참조할 고유 키
+   - `category`: 느슨한 인식(`loosePattern`)에 쓰이는 분류 (예: `conv`, `pool`, `fc`, `input`)
+   - `icon`: 폴더 안 이미지 파일명 — 교체만 하면 목록·작업대·컨베이어·그래프 아이콘이 모두 바뀜
+   - 본문(`---` 아래)은 부품 클릭 시 뜨는 설명
 
-3. 새 조합을 인식시키고 싶다면 `assets/parts/recipes.json`에 추가:
+4. `_parts/manifest.json` 배열에 폴더 이름(`"dropout"`) 추가.
+5. 새 조합을 인식시키고 싶다면 `_parts/recipes.json`에 추가:
 
    ```json
    {
@@ -56,7 +64,8 @@ _post/*.md                 글 (frontmatter + 마크다운 본문)
    ```
 
    `sequence`를 정확히 맞추면 인식(`loose: true`면 `loosePattern`으로 느슨하게 인식).
-   `postId`를 지정하면 "자세히 보기" 버튼이 해당 `_post` 글을 엶.
+   `postId`를 지정하면 조립 완성 시 뜨는 이름(예: "MyNet")이 그 `_post` 글로 가는 링크가 되고,
+   그래프 뷰에서도 이 레시피에 쓰인 부품들이 해당 글 노드로 자동 연결됨.
 
 ## 새 글 쓰는 법
 

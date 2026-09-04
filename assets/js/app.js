@@ -72,6 +72,8 @@
         posts.forEach(function (p) { state.byId[p.id] = p; });
         render();
         openFromHash();
+        // factory.js가 부품 폴더 그래프와 합칠 수 있도록 알림
+        document.dispatchEvent(new CustomEvent("hoteasik:posts-ready", { detail: { posts: posts } }));
       })
       .catch(function (err) {
         els.postList.innerHTML = '<div class="post-list-empty">글을 불러오지 못했습니다.<br>(' + escapeHtml(err.message) + ')</div>';
@@ -476,5 +478,8 @@
   });
 
   // 공장 조립바(factory.js)에서 완성된 아키텍처의 글을 열 때 씀
-  window.Hoteasik = { openPost: openPost };
+  window.Hoteasik = {
+    openPost: openPost,
+    getPosts: function () { return state.posts; },
+  };
 })();

@@ -1,14 +1,18 @@
-/* ===== HOTEASIK — 신경망 조립 공장 (부품 목록 · 작업대 배치 · 컨베이어 조립) ===== */
+/* ===== HOTEASIK — 신경망 조립 공장 (부품 폴더 · 그래프 · 작업대 배치 · 컨베이어 조립) ===== */
 (function () {
   "use strict";
 
-  var PARTS_URL = "assets/parts/parts.json";
-  var RECIPES_URL = "assets/parts/recipes.json";
+  var PARTS_DIR = "_parts/";
+  var PARTS_MANIFEST = PARTS_DIR + "manifest.json";
+  var RECIPES_URL = PARTS_DIR + "recipes.json";
 
   var parts = [];
   var partsById = {};
   var recipes = [];
   var sequence = []; // 컨베이어에 놓인 부품 id 순서 (왼쪽=입력 → 오른쪽=출력)
+
+  var partsReady = false;
+  var posts = null; // app.js 쪽 글 목록 (그래프 합치는 용도)
 
   var els = {};
 
@@ -16,23 +20,8 @@
 
   function init() {
     cacheEls();
-    Promise.all([
-      fetch(PARTS_URL).then(function (r) { return r.json(); }),
-      fetch(RECIPES_URL).then(function (r) { return r.json(); }),
-    ])
-      .then(function (res) {
-        parts = res[0];
-        recipes = res[1];
-        parts.forEach(function (p) { partsById[p.id] = p; });
-        renderPartsGrid();
-        bindDnD();
-        bindPartDetail();
-        renderAssembly();
-      })
-      .catch(function (err) {
-        els.partsGrid.innerHTML = '<div class="post-list-empty">부품 목록을 불러오지 못했습니다.</div>';
-        console.error(err);
-      });
+    loadParts();
+    bindPostsBridge();
   }
 
   function cacheEls() {
@@ -51,6 +40,82 @@
     els.partDetailIcon = document.getElementById("part-detail-icon");
     els.partDetailTitle = document.getElementById("part-detail-title");
     els.partDetailDesc = document.getElementById("part-detail-desc");
+    els.graphSvg = document.getElementById("graph-svg");
+  }
+
+  /* ---------- 부품: 폴더 단위로 로딩 (_parts/<id>/part.md + icon) ---------- */
+
+  function loadParts() {
+    fetch(PARTS_MANIFEST)
+      .then(function (r) { return r.json(); })
+      .then(function (folders) {
+        return Promise.all([
+          Promise.all(folders.map(function (folder) {
+            return fetch(PARTS_DIR + folder + "/part.md")
+              .then(function (r) { return r.text(); })
+              .then(function (raw) { return buildPart(folder, raw); });
+          })),
+          fetch(RECIPES_URL).then(function (r) { return r.json(); }),
+        ]);
+      })
+      .then(function (res) {
+        parts = res[0];
+        recipes = res[1];
+        parts.forEach(function (p) { partsById[p.id] = p; });
+        partsReady = true;
+        renderPartsGrid();
+        bindDnD();
+        bindPartDetail();
+        renderAssembly();
+        maybeRenderGraph();
+      })
+      .catch(function (err) {
+        els.partsGrid.innerHTML = '<div class="post-list-empty">부품 목록을 불러오지 못했습니다.</div>';
+        console.error(err);
+      });
+  }
+
+  function buildPart(folder, raw) {
+    var fm = parseFrontmatter(raw);
+    var meta = fm.meta;
+    var iconFile = meta.icon || "icon.svg";
+    return {
+      id: meta.id || folder,
+      folder: folder,
+      label: meta.label || folder,
+      category: meta.category || folder,
+      icon: PARTS_DIR + folder + "/" + iconFile,
+      desc: fm.body.trim(),
+    };
+  }
+
+  function parseFrontmatter(raw) {
+    var m = raw.match(/^---\s*\n([\s\S]*?)\n---\s*\n?([\s\S]*)$/);
+    if (!m) return { meta: {}, body: raw };
+    var meta = {};
+    m[1].split("\n").forEach(function (line) {
+      var idx = line.indexOf(":");
+      if (idx === -1) return;
+      var key = line.slice(0, idx).trim();
+      var val = line.slice(idx + 1).trim().replace(/^["']|["']$/g, "");
+      meta[key] = val;
+    });
+    return { meta: meta, body: m[2] };
+  }
+
+  /* ---------- 글(post) 쪽과 연결 — 그래프 합치기용 ---------- */
+
+  function bindPostsBridge() {
+    document.addEventListener("hoteasik:posts-ready", function (e) {
+      posts = e.detail.posts;
+      maybeRenderGraph();
+    });
+    // app.js가 factory.js보다 먼저 끝났을 경우 대비
+    if (window.Hoteasik && typeof window.Hoteasik.getPosts === "function") {
+      var p = window.Hoteasik.getPosts();
+      if (p && p.length) { posts = p; }
+    }
+    maybeRenderGraph();
   }
 
   /* ---------- 부품 목록 ---------- */
@@ -169,15 +234,25 @@
 
     if (matched) {
       els.assemblyReadout.classList.add("is-matched");
-      els.assemblyReadout.innerHTML =
-        '<span class="match-name">✨ ' + escapeHtml(matched.label) + ' 완성!</span>' +
-        escapeHtml(matched.hint || "") +
-        (matched.postId ? '<br><button class="assembly-open-btn" id="assembly-open-btn" type="button">자세히 보기 →</button>' : "");
-      var btn = document.getElementById("assembly-open-btn");
-      if (btn) {
-        btn.addEventListener("click", function () {
+      els.assemblyReadout.innerHTML = "";
+
+      var nameEl = document.createElement(matched.postId ? "a" : "span");
+      nameEl.className = "match-name" + (matched.postId ? " match-name-link" : "");
+      nameEl.textContent = "✨ " + matched.label + " 완성!" + (matched.postId ? " →" : "");
+      if (matched.postId) {
+        nameEl.href = "#" + matched.postId;
+        nameEl.title = "\"" + matched.label + "\" 노트로 이동";
+        nameEl.addEventListener("click", function (e) {
+          e.preventDefault();
           if (window.Hoteasik && window.Hoteasik.openPost) window.Hoteasik.openPost(matched.postId, null);
         });
+      }
+      els.assemblyReadout.appendChild(nameEl);
+
+      if (matched.hint) {
+        var hintEl = document.createElement("div");
+        hintEl.textContent = matched.hint;
+        els.assemblyReadout.appendChild(hintEl);
       }
     } else {
       els.assemblyReadout.classList.remove("is-matched");
@@ -218,7 +293,7 @@
     return i === pattern.length;
   }
 
-  /* ---------- 부품 상세 (목록 클릭 시 새 캔버스) ---------- */
+  /* ---------- 부품 상세 (부품 목록 클릭 시 새 캔버스) ---------- */
 
   function bindPartDetail() {
     els.partDetailClose.addEventListener("click", closePartDetail);
@@ -246,6 +321,119 @@
       els.partDetail.classList.remove("is-open");
     }, 200);
   }
+
+  /* ---------- 그래프: 부품 폴더 + 글을 한 그래프에 배치 ---------- */
+
+  function maybeRenderGraph() {
+    if (!partsReady || !posts) return;
+    renderCombinedGraph(posts, parts, recipes);
+  }
+
+  function partsUsedByRecipe(recipe) {
+    if (recipe.sequence) {
+      return uniq(recipe.sequence);
+    }
+    if (recipe.loosePattern) {
+      var byCategory = {};
+      parts.forEach(function (p) {
+        (byCategory[p.category] = byCategory[p.category] || []).push(p.id);
+      });
+      var ids = [];
+      recipe.loosePattern.forEach(function (cat) {
+        (byCategory[cat] || []).forEach(function (id) { ids.push(id); });
+      });
+      return uniq(ids);
+    }
+    return [];
+  }
+
+  function uniq(arr) {
+    var seen = {}, out = [];
+    arr.forEach(function (v) { if (!seen[v]) { seen[v] = true; out.push(v); } });
+    return out;
+  }
+
+  function renderCombinedGraph(posts, parts, recipes) {
+    var ns = "http://www.w3.org/2000/svg";
+    var svg = els.graphSvg;
+    svg.innerHTML = "";
+
+    var nodes = [];
+    posts.forEach(function (p) { nodes.push({ key: "post:" + p.id, id: p.id, type: "post", title: p.title }); });
+    parts.forEach(function (p) { nodes.push({ key: "part:" + p.id, id: p.id, type: "part", title: p.label }); });
+    if (!nodes.length) return;
+
+    var cx = 120, cy = 85, r = Math.min(72, 34 + nodes.length * 3.5);
+    var pos = {};
+    nodes.forEach(function (n, i) {
+      var angle = (i / nodes.length) * Math.PI * 2 - Math.PI / 2;
+      pos[n.key] = { x: cx + r * Math.cos(angle), y: cy + r * Math.sin(angle) };
+    });
+
+    var edges = [];
+    var seenEdge = {};
+
+    posts.forEach(function (p) {
+      (p.links || []).forEach(function (targetId) {
+        if (!posts.some(function (pp) { return pp.id === targetId; })) return;
+        var key = ["post:" + p.id, "post:" + targetId].sort().join("|");
+        if (seenEdge[key]) return;
+        seenEdge[key] = true;
+        edges.push(["post:" + p.id, "post:" + targetId]);
+      });
+    });
+
+    recipes.forEach(function (recipe) {
+      if (!recipe.postId) return;
+      partsUsedByRecipe(recipe).forEach(function (partId) {
+        if (!partsById[partId]) return;
+        var key = "part:" + partId + "|post:" + recipe.postId;
+        if (seenEdge[key]) return;
+        seenEdge[key] = true;
+        edges.push(["part:" + partId, "post:" + recipe.postId]);
+      });
+    });
+
+    edges.forEach(function (e) {
+      var a = pos[e[0]], b = pos[e[1]];
+      if (!a || !b) return;
+      var line = document.createElementNS(ns, "line");
+      line.setAttribute("x1", a.x);
+      line.setAttribute("y1", a.y);
+      line.setAttribute("x2", b.x);
+      line.setAttribute("y2", b.y);
+      line.setAttribute("class", "graph-edge");
+      svg.appendChild(line);
+    });
+
+    nodes.forEach(function (n) {
+      var g = document.createElementNS(ns, "g");
+      g.setAttribute("class", "graph-node" + (n.type === "part" ? " is-part" : ""));
+      g.dataset.id = n.id;
+      g.dataset.type = n.type;
+      var c = document.createElementNS(ns, "circle");
+      c.setAttribute("cx", pos[n.key].x);
+      c.setAttribute("cy", pos[n.key].y);
+      c.setAttribute("r", n.type === "part" ? 4 : 5);
+      var t = document.createElementNS(ns, "text");
+      t.setAttribute("x", pos[n.key].x);
+      t.setAttribute("y", pos[n.key].y + 12);
+      t.setAttribute("text-anchor", "middle");
+      t.textContent = truncate(n.title, 9);
+      g.appendChild(c);
+      g.appendChild(t);
+      g.addEventListener("click", function () {
+        if (n.type === "post") {
+          if (window.Hoteasik && window.Hoteasik.openPost) window.Hoteasik.openPost(n.id, null);
+        } else {
+          openPartDetail(n.id);
+        }
+      });
+      svg.appendChild(g);
+    });
+  }
+
+  function truncate(s, n) { return s.length > n ? s.slice(0, n) + "…" : s; }
 
   /* ---------- utils ---------- */
 
