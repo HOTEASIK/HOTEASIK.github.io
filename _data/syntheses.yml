@@ -1,0 +1,24 @@
+# 합성 레시피 — N개 개념을 상자에 넣고 합성. 순서 무관.
+#   inputs: 재료 글 slug 집합
+#   loose:  true 면 inputs 를 "포함"만 해도 인식 (기본은 정확히 그 집합)
+#   post:   완성 시 이동할 글 slug
+
+- id: vla
+  label: VLA (Vision-Language-Action)
+  inputs: [cnn, llm, robotics]
+  post: vla
+
+- id: physical-chemistry
+  label: 물리화학
+  inputs: [physics, chemistry]
+  post: physical-chemistry
+
+- id: multimodal
+  label: 멀티모달 모델
+  inputs: [cnn, llm]
+  post: multimodal
+
+- id: f1
+  label: F1 점수
+  inputs: [precision, recall]
+  post: f1

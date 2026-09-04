@@ -1,0 +1,160 @@
+# HOTEASIK — Chirpy 기반 신경망 조립 공장
+
+theme: jekyll-theme-chirpy
+
+lang: ko-KR
+timezone: Asia/Seoul
+
+# ── jekyll-seo-tag ───────────────────────────────
+title: HOTEASIK
+tagline: 개념을 조립하고 합성하는 학습 공장
+description: >-
+  신경망의 층과 개념을 부품처럼 조립(조합)하고 합성해서
+  더 큰 모델·개념을 만들어 보는 학습 블로그.
+
+# 사이트 배포 주소 (끝에 / 없음)
+url: "https://hoteasik.github.io"
+
+github:
+  username: HOTEASIK
+
+twitter:
+  username:
+
+social:
+  name: HOTEASIK
+  email: adg6183@gmail.com
+  links:
+    - https://github.com/HOTEASIK
+
+webmaster_verifications:
+  google:
+  bing:
+  alexa:
+  yandex:
+  baidu:
+  facebook:
+
+analytics:
+  google:
+    id:
+  goatcounter:
+    id:
+
+pageviews:
+  provider:
+
+# 빈 값 = 시스템 설정 따름 + 사이드바 토글 표시
+theme_mode:
+
+cdn:
+
+avatar:
+
+social_preview_image:
+
+toc: true
+
+actions:
+  edit_post:
+    enabled: false
+    url: ""
+    static_url: false
+
+comments:
+  # 설정 전에는 비활성. Discussions 활성화 + giscus 앱 설치 후 아래 4개 값 채우기.
+  provider: # giscus
+  giscus:
+    repo: HOTEASIK/HOTEASIK.github.io
+    repo_id:
+    category: Announcements
+    category_id:
+    mapping: pathname
+    strict: "0"
+    input_position: top
+    lang: ko
+    reactions_enabled: "1"
+
+assets:
+  self_host:
+    enabled:
+    env:
+
+pwa:
+  enabled: true
+  cache:
+    enabled: true
+    deny_paths:
+
+baseurl: ""
+
+# ── 아래는 수정 비권장 ───────────────────────────
+kramdown:
+  footnote_backlink: "&#8617;&#xfe0e;"
+  syntax_highlighter: rouge
+  syntax_highlighter_opts:
+    css_class: highlight
+    span:
+      line_numbers: false
+    block:
+      line_numbers: true
+      start_line: 1
+
+collections:
+  tabs:
+    output: true
+    sort_by: order
+
+defaults:
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: post
+      comments: true
+      toc: true
+      permalink: /posts/:title/
+  - scope:
+      path: _drafts
+    values:
+      comments: false
+  - scope:
+      path: ""
+      type: tabs
+    values:
+      layout: page
+      permalink: /:title/
+
+sass:
+  style: compressed
+
+compress_html:
+  clippings: all
+  comments: all
+  endings: all
+  profile: false
+  blanklines: false
+  ignore:
+    envs: [development]
+
+exclude:
+  - "*.gem"
+  - "*.gemspec"
+  - docs
+  - tools
+  - README.md
+  - REDESIGN.md
+  - IMPROVEMENTS.md
+  - LICENSE
+  - purgecss.js
+  - "*.config.js"
+  - "package*.json"
+
+jekyll-archives:
+  enabled: [categories, tags]
+  layouts:
+    category: category
+    tag: tag
+  permalinks:
+    tag: /tags/:name/
+    category: /categories/:name/

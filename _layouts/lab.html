@@ -1,0 +1,26 @@
+---
+layout: page
+---
+
+{{ content }}
+
+{%- assign lab_posts = site.posts | where_exp: "p", "p.combinable or p.synthesizable" -%}
+<script type="application/json" id="lab-notes">
+[
+{%- for p in lab_posts -%}
+{"id":{{ p.slug | jsonify }},"title":{{ p.title | jsonify }},"url":{{ p.url | relative_url | jsonify }},"layer":{{ p.layer | default: "" | jsonify }},"kind":{{ p.kind | default: "" | jsonify }},"icon":{{ p.icon | default: "" | jsonify }},"combinable":{{ p.combinable | default: false | jsonify }},"synthesizable":{{ p.synthesizable | default: false | jsonify }},"weight":{{ p.weight | default: 1 | jsonify }}}{%- unless forloop.last -%},{%- endunless -%}
+{%- endfor -%}
+]
+</script>
+<script type="application/json" id="lab-recipes">{{ site.data.recipes | jsonify }}</script>
+<script type="application/json" id="lab-syntheses">{{ site.data.syntheses | jsonify }}</script>
+<script type="application/json" id="lab-all-posts">
+{ {%- for p in site.posts -%}{{ p.slug | jsonify }}:{"title":{{ p.title | jsonify }},"url":{{ p.url | relative_url | jsonify }}}{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%} }
+</script>
+
+<div id="lab-root">
+  <noscript><p class="lab-noscript">이 페이지의 조합·합성 기능은 자바스크립트가 필요합니다.</p></noscript>
+</div>
+
+<link rel="stylesheet" href="{{ '/assets/css/lab.css' | relative_url }}">
+<script defer src="{{ '/assets/js/lab.js' | relative_url }}"></script>

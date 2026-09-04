@@ -1,0 +1,40 @@
+# 조합 레시피 — 층별 부품을 순서대로 벨트에 올려 모델을 만든다.
+#   sequence: 글 slug 를 정확한 순서로 (정확 일치)
+#   loose:    이 항목들(slug 또는 kind)이 이 순서로 한 번씩 등장하면 인식 (사이 다른 부품 허용)
+#   post:     완성 시 이동할 글 slug
+
+- id: lenet-5
+  label: LeNet-5
+  sequence: [input, conv, avgpool, conv, avgpool, fc, fc, softmax-out]
+  post: lenet-5
+  hint: 입력 → 합성곱 → 평균풀링 → 합성곱 → 평균풀링 → 완전연결 ×2 → 출력
+
+- id: alexnet
+  label: AlexNet
+  sequence: [input, conv, pool, conv, pool, conv, conv, conv, pool, fc, dropout, fc, dropout, softmax-out]
+  post: alexnet
+  hint: 합성곱 5 + 최대풀링 3, 드롭아웃 낀 완전연결 2, 출력
+
+- id: vggnet
+  label: VGGNet
+  sequence: [input, conv, conv, pool, conv, conv, pool, conv, conv, conv, pool, fc, fc, softmax-out]
+  post: vggnet
+  hint: 작은 합성곱을 여러 개 겹쳐 깊게 쌓고 완전연결 2 뒤 출력
+
+- id: googlenet
+  label: GoogLeNet
+  sequence: [input, conv, pool, inception, inception, inception, gap, softmax-out]
+  post: googlenet
+  hint: 인셉션 모듈을 쌓고 완전연결 대신 전역평균풀링 뒤 출력
+
+- id: cnn
+  label: CNN (일반형)
+  loose: [input, conv, pooling, fc]
+  post: cnn
+  hint: 입력 → 합성곱 → 풀링(종류무관) → 완전연결 순이면 인식
+
+- id: rnn
+  label: RNN (일반형)
+  loose: [input, recurrent, fc]
+  post: rnn-net
+  hint: 입력 → 순환 → 완전연결 순이면 인식

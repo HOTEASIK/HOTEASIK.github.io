@@ -1,0 +1,159 @@
+/* ===== HOTEASIK 조합·합성 랩 ===== */
+
+#lab-root {
+  --lab-line: var(--card-border-color, #e6e6e6);
+  --lab-card: var(--card-bg, #fff);
+  --lab-accent: var(--link-color, #2a63d6);
+  margin-top: 1.5rem;
+}
+
+.lab-empty-notice,
+.lab-noscript {
+  color: var(--text-muted-color, #888);
+  font-size: 0.9rem;
+}
+
+/* ---- 대시보드 ---- */
+.lab-dashboard {
+  border: 1px solid var(--lab-line);
+  border-radius: 10px;
+  background: var(--lab-card);
+  padding: 0.75rem 1rem 1rem;
+}
+.lab-dashboard-title {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+.lab-dashboard-title small {
+  font-weight: 400;
+  color: var(--text-muted-color, #888);
+  margin-left: 0.35rem;
+}
+
+.lab-layer {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr;
+  gap: 0.75rem;
+  padding: 0.55rem 0;
+  border-top: 1px dashed var(--lab-line);
+}
+.lab-layer:first-of-type { border-top: 0; }
+.lab-layer.is-wide { background: color-mix(in srgb, var(--lab-accent) 5%, transparent); border-radius: 8px; }
+
+.lab-layer-name {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--heading-color, inherit);
+  padding-top: 0.15rem;
+}
+.lab-layer-kinds { display: flex; flex-direction: column; gap: 0.5rem; }
+.lab-kind-name {
+  font-size: 0.75rem;
+  color: var(--text-muted-color, #888);
+  margin-bottom: 0.2rem;
+}
+.lab-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+
+.lab-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.28rem 0.6rem;
+  font-size: 0.82rem;
+  line-height: 1.2;
+  color: var(--text-color, inherit);
+  background: var(--main-bg, #fafafa);
+  border: 1px solid var(--lab-line);
+  border-radius: 999px;
+  cursor: grab;
+}
+.lab-chip:hover { border-color: var(--lab-accent); color: var(--lab-accent); }
+.lab-chip:active { cursor: grabbing; }
+.lab-chip-icon { width: 16px; height: 16px; object-fit: contain; }
+.lab-chip-dot {
+  width: 9px; height: 9px; border-radius: 50%;
+  background: var(--text-muted-color, #999);
+  flex-shrink: 0;
+}
+.lab-chip-dot[data-layer="input"] { background: #3b82f6; }
+.lab-chip-dot[data-layer="hidden"] { background: #f59e0b; }
+.lab-chip-dot[data-layer="output"] { background: #10b981; }
+.lab-chip-dot[data-layer="training"] { background: #a855f7; }
+.lab-chip-dot[data-layer="eval"] { background: #14b8a6; }
+.lab-chip-dot[data-layer="concept"] { background: #ef4444; }
+.lab-chip-dot[data-layer="model"] { background: #64748b; }
+
+/* ---- 토글 ---- */
+.lab-toggles { display: flex; gap: 0.5rem; margin: 1rem 0 0.5rem; }
+
+/* ---- 패널 공통 ---- */
+.lab-panel {
+  border: 1px solid var(--lab-line);
+  border-radius: 10px;
+  background: var(--lab-card);
+  padding: 0.9rem 1rem 1rem;
+  margin-bottom: 0.9rem;
+}
+.lab-panel-title { margin: 0 0 0.7rem; font-size: 1rem; }
+.lab-panel-actions { display: flex; gap: 0.5rem; margin-top: 0.7rem; }
+
+.lab-belt, .lab-box {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 3.4rem;
+  padding: 0.6rem 0.8rem;
+  background: var(--main-bg, #fafafa);
+  border: 1px solid var(--lab-line);
+  border-radius: 8px;
+  overflow-x: auto;
+}
+.lab-box { flex-wrap: wrap; }
+.lab-belt.is-over, .lab-box.is-over {
+  border-color: var(--lab-accent);
+  box-shadow: inset 0 0 0 1px var(--lab-accent);
+}
+.lab-belt-cap {
+  flex-shrink: 0;
+  font-size: 0.72rem;
+  color: var(--text-muted-color, #888);
+}
+.lab-belt-slots {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.2rem;
+}
+
+.lab-slot {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.55rem;
+  font-size: 0.8rem;
+  background: var(--lab-card);
+  border: 1px solid var(--lab-line);
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.lab-slot:hover { border-color: #ef4444; }
+.lab-arrow, .lab-plus { color: var(--text-muted-color, #999); flex-shrink: 0; }
+.lab-empty { color: var(--text-muted-color, #aaa); font-size: 0.8rem; }
+
+/* ---- 결과 ---- */
+.lab-result { margin-top: 0.7rem; font-size: 0.95rem; min-height: 1.2rem; }
+.lab-result.is-hit { color: var(--lab-accent); font-weight: 600; }
+.lab-result.is-hit a { text-decoration: underline; }
+.lab-result.is-miss { color: #ef4444; }
+.lab-result-hint {
+  margin-top: 0.25rem;
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--text-muted-color, #888);
+}
+
+@media (max-width: 576px) {
+  .lab-layer { grid-template-columns: 1fr; gap: 0.3rem; }
+}

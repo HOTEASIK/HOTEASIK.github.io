@@ -1,140 +1,110 @@
 # HOTEASIK.github.io
 
-**스팀펑크 신경망 조립 공장** 테마 깃 블로그. 순수 HTML/CSS/JS, 빌드 도구 없음
-(Jekyll/Hugo/Node 불필요).
+**개념을 조립하고 합성하는 학습 공장.**
+[cotes2020/jekyll-theme-chirpy](https://github.com/cotes2020/jekyll-theme-chirpy) (`~> 7.6`) 기반.
 
-- 부품 창고가 **폴더 트리**(`_parts/…`)로 되어 있음 — 폴더 안에 폴더를 얼마든지 중첩 가능
-  (예: 은닉층 폴더 → 풀링 폴더 → 평균풀링 부품)
-- 사이드바 **부품 창고**를 펼치고/접으며 탐색, 캔버스(작업대)에 자유롭게 드래그 배치
-- **폴더**와 **글(노트)**도 작업대에 드래그해서 놓을 수 있음 (노트는 클릭하면 바로 그 글이 열림)
-- 부품 폴더 트리 전체가 **그래프 뷰**에 방사형으로 함께 배치됨 — 폴더 구조 선, 그리고 어느
-  부품이 어느 아키텍처(글)에 쓰이는지 점선으로 연결
-- 화면 하단 **컨베이어 벨트**에 부품을 왼쪽(입력)→오른쪽(출력) 순서로 올린 뒤 **⚙ 제작** 버튼을
-  눌러야 인식 결과가 나옴 (화학 게임처럼 조합 → 제작 → 결과 확인)
-- 조립 결과(출력) 이름 자체가 링크 — **클릭하면 그 이름의 노트(글)로 바로 이동**
-- 부품/글을 클릭하면 각각 전용 창(캔버스)이 새로 열림
-- 글들도 Obsidian처럼 **그래프 뷰 · 백링크**로 서로 연결됨
+- 사이드바: **홈 · 조합 & 합성 · 블로그 · 소개**
+- 부품·개념·모델은 **모두 각각 하나의 글**(`_posts/*.md`)이다. `frontmatter` 의
+  `layer` / `kind` 로 성격을 표시한다.
+- **/lab/** 에서 그 글들을 재료로 드래그앤드롭해 새 모델·개념을 만든다.
+  - **조합**: 층을 순서대로 벨트에 올려 모델 인식 (예: 입력→합성곱→풀링→완전연결→출력 = CNN)
+  - **합성**: 개념을 상자에 담아 상위 개념 (예: 물리+화학 = 물리화학, LLM+CNN+로보틱스 = VLA)
 
 ## 구조
 
 ```
-index.html                       메인 셸 (사이드바 + 캔버스 + 컨베이어 + 리더 + 부품 상세)
-assets/css/style.css             스팀펑크(황동·녹슨철) 테마 스타일
-assets/js/app.js                 글 로딩 · 캔버스 줌/팬 · 그래프 · 리더 로직
-assets/js/factory.js             부품 트리 로딩 · 드래그앤드롭 배치 · 컨베이어 조립/인식 · 그래프 합치기
-_parts/manifest.json             부품 창고 트리 (폴더 안에 폴더, 아래 참고)
-_parts/recipes.json              인식할 아키텍처 레시피 (LeNet-5, CNN…) · 그래프 연결선의 근거
-_parts/<카테고리>/.../<id>/part.md  부품 하나 = 폴더 하나 (frontmatter + 설명), 원하는 깊이로 중첩
-_parts/<카테고리>/.../<id>/icon.svg 그 부품의 아이콘 (이미지로 커스텀 가능, 아래 참고)
-_post/manifest.json              글 목록 (파일명 배열)
-_post/*.md                       글 (frontmatter + 마크다운 본문)
-.nojekyll                          GitHub Pages가 _post·_parts 폴더를 그대로 서빙하도록 함 (필수, 지우지 말 것)
+_config.yml                     사이트 설정 (lang: ko-KR, giscus 등)
+Gemfile                         jekyll-theme-chirpy 의존성
+.github/workflows/pages-deploy.yml   빌드·배포 (GitHub Actions)
+
+_tabs/lab.md                    조합 & 합성  (layout: lab)
+_tabs/blog.md                   전체 글 목록
+_tabs/about.md                  소개
+index.html                     홈 (layout: landing)
+
+_layouts/landing.html           홈 레이아웃
+_layouts/lab.html               랩 레이아웃 — 노트/레시피를 JSON 으로 심어 lab.js 에 전달
+_layouts/{...}                  나머지는 Chirpy gem 이 제공
+
+_posts/YYYY-MM-DD-<slug>.md      모든 부품·개념·모델
+_data/recipes.yml               조합 레시피
+_data/syntheses.yml             합성 레시피
+_data/contact.yml               사이드바 하단 아이콘
+
+_plugins/wikilink.rb            본문 [[slug]] → 그 글 링크 (CI 빌드에서 동작)
+_plugins/posts-lastmod-hook.rb  Chirpy 표준
+
+assets/js/lab.js                조합·합성 엔진 (vanilla, 의존성 없음)
+assets/css/lab.css              랩 스타일
+assets/parts/*.svg              부품 아이콘
 ```
 
-## 부품 트리 구조 (`_parts/manifest.json`)
+## 글(노트) 쓰는 법
 
-폴더 안에 폴더를 얼마든지 중첩할 수 있는 트리입니다. 노드는 두 종류뿐입니다.
+`_posts/2026-09-10-<slug>.md`:
 
-```json
-{
-  "type": "folder",
-  "label": "부품",
-  "children": [
-    { "type": "folder", "label": "입력", "children": [
-      { "type": "part", "path": "input/input" }
-    ]},
-    { "type": "folder", "label": "은닉층", "children": [
-      { "type": "part", "path": "hidden/conv" },
-      { "type": "folder", "label": "풀링", "children": [
-        { "type": "part", "path": "hidden/pooling/avgpool" }
-      ]},
-      { "type": "part", "path": "hidden/fc" }
-    ]},
-    { "type": "folder", "label": "출력", "children": [
-      { "type": "part", "path": "output/pool" }
-    ]}
-  ]
-}
+```markdown
+---
+title: 레이어 정규화
+date: 2026-09-10 10:00:00 +0900
+categories: [부품, 은닉층]
+tags: [norm]
+layer: hidden          # input | hidden | output | training | eval | concept | model
+kind: norm             # 세부: activation, conv, recurrent, pooling, dense, loss, norm,
+                       #   attention, optimizer, regularization,
+                       #   classification, regression, detection, generation, ranking …
+icon: /assets/parts/norm.svg   # 선택 (없으면 layer 색 점)
+combinable: true       # 조합 벨트의 부품으로 노출
+synthesizable: true    # 합성 상자의 재료로 노출
+weight: 1              # 대시보드 비중 (은닉층 핵심은 2)
+---
+
+본문. `[[relu]]` 또는 `[[relu|렐루]]` 로 다른 글에 링크.
 ```
 
-- `{ "type": "folder", "label": "...", "children": [...] }` — 폴더. `children`에 폴더를 또 넣으면 중첩됨.
-- `{ "type": "part", "path": "..." }` — 부품 하나. `path`는 `_parts/` 기준 상대 경로이고,
-  그 경로 폴더 안에 `part.md`와 아이콘 이미지가 있어야 함.
+- `slug` = 파일명에서 날짜를 뗀 부분. `[[slug]]` 와 레시피가 이 값으로 서로를 참조한다.
+- 모델(LeNet-5, VLA 등)은 `layer: model`, `categories: [모델]`, 보통 `combinable`/`synthesizable` 없음.
 
-## 부품 추가/커스텀하는 법
+## 조합 레시피 (`_data/recipes.yml`)
 
-1. `_parts/` 아래 원하는 위치에 새 폴더 생성, 예: `_parts/hidden/dropout/`
-2. 그 폴더에 아이콘 이미지 추가: `_parts/hidden/dropout/icon.png` (svg/png 등 원하는 형식)
-3. `_parts/hidden/dropout/part.md` 작성:
+```yaml
+- id: my-net
+  label: MyNet
+  sequence: [input, conv, pool, fc, softmax-out]   # 정확한 순서, slug 배열
+  # 또는
+  loose: [input, conv, pooling, fc]                # slug 또는 kind. 이 순서로 한 번씩이면 인식
+  post: my-net                                     # 완성 시 이동할 글 slug
+  hint: 한 줄 설명
+```
 
-   ```markdown
-   ---
-   id: dropout
-   label: 드롭아웃
-   category: fc
-   icon: icon.png
-   ---
+## 합성 레시피 (`_data/syntheses.yml`)
 
-   일부 연결을 무작위로 끊어 과적합을 막는 장치.
-   ```
+```yaml
+- id: my-fusion
+  label: 융합개념
+  inputs: [physics, chemistry]   # 순서 무관 집합
+  loose: false                   # true 면 이 재료들을 "포함"만 해도 인식
+  post: my-fusion
+```
 
-   - `id`: 레시피(`sequence`)에서 참조할 고유 키
-   - `category`: 느슨한 인식(`loosePattern`)에 쓰이는 분류 (예: `conv`, `pool`, `fc`, `input`)
-   - `icon`: 폴더 안 이미지 파일명 — 교체만 하면 목록·작업대·컨베이어·그래프 아이콘이 모두 바뀜
-   - 본문(`---` 아래)은 부품 클릭 시 뜨는 설명
+## 배포
 
-4. `_parts/manifest.json` 트리에 `{ "type": "part", "path": "hidden/dropout" }` 를 원하는
-   폴더의 `children` 배열에 추가 (새 폴더로 묶고 싶다면 `folder` 노드로 감싸도 됨).
-5. 새 조합을 인식시키고 싶다면 `_parts/recipes.json`에 추가:
+로컬에 Ruby 없이도 **GitHub Actions 가 빌드·배포**한다.
 
-   ```json
-   {
-     "id": "my-net",
-     "label": "MyNet",
-     "sequence": ["input", "conv", "pool", "fc"],
-     "postId": "cnn",
-     "hint": "설명 문구"
-   }
-   ```
+1. GitHub 레포 **Settings → Pages → Source: `GitHub Actions`**
+2. `main` 에 push → Actions "Build and Deploy" 통과 시 <https://hoteasik.github.io> 반영
+3. (댓글) Settings → Discussions 활성화 → <https://github.com/apps/giscus> 설치 →
+   <https://giscus.app> 에서 얻은 `repo_id` · `category_id` 를 `_config.yml` 의
+   `comments.giscus` 에 넣고 `comments.provider: giscus` 주석 해제
 
-   `sequence`를 정확히 맞추면 인식(`loose: true`면 `loosePattern`으로 느슨하게 인식), 컨베이어 옆
-   **⚙ 제작** 버튼을 눌러야 결과가 나타납니다. `postId`를 지정하면 완성 시 뜨는 이름(예: "MyNet")이
-   그 `_post` 글로 가는 링크가 되고, 그래프 뷰에서도 이 레시피에 쓰인 부품들이 해당 글 노드로
-   자동 연결됨.
+> `pages-deploy.yml` 의 htmlproofer 단계는 첫 배포 안정화용으로 `continue-on-error: true`.
+> 링크 경고가 정리되면 제거할 것.
 
-## 새 글 쓰는 법
-
-1. `_post/` 에 마크다운 파일 추가, 예: `_post/2026-09-10-my-post.md`
-
-   ```markdown
-   ---
-   id: my-post
-   title: 글 제목
-   date: 2026-09-10
-   tags: [태그1, 태그2]
-   links: [welcome]        # 연결할 다른 글의 id (선택)
-   x: 700                  # 캔버스 위 카드 좌표 (선택, 기본 0)
-   y: 200
-   ---
-
-   본문은 일반 마크다운. `[[다른글id]]` 로 위키링크도 가능.
-   ```
-
-2. `_post/manifest.json` 배열에 파일명 추가.
-3. 커밋 후 `main` 브랜치에 푸시하면 GitHub Pages에 반영됨.
-
-## 로컬 미리보기
-
-정적 파일이므로 아무 로컬 서버로 열면 됨 (파일을 브라우저로 바로 열면 fetch가 막힐 수 있음):
+## 로컬 미리보기 (선택, Ruby 필요)
 
 ```bash
-python -m http.server 8000
-# http://localhost:8000
+# RubyInstaller + DevKit (Windows) 설치 후
+gem install bundler
+bundle
+bundle exec jekyll s        # http://127.0.0.1:4000
 ```
-
-## 조작법
-
-- 캔버스: 스크롤로 확대/축소, 드래그로 이동
-- 카드 / 사이드바 글 목록 / 그래프 노드 클릭 → 카메라가 이동하며 글이 열림
-- 검색창: 제목·태그로 카드/목록 필터링 (일치하지 않는 항목은 흐려짐)
-- `Esc` 또는 배경 클릭으로 글 닫기, URL에 `#글id`로 직접 공유 가능
