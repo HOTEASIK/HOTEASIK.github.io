@@ -30,11 +30,10 @@
   margin-left: 0.35rem;
 }
 
+/* 층 = 세로 블록 (이름 위, 내용 아래) */
 .lab-layer {
-  display: grid;
-  grid-template-columns: 5.5rem 1fr;
-  gap: 0.75rem;
-  padding: 0.55rem 0;
+  display: block;
+  padding: 0.7rem 0.2rem;
   border-top: 1px dashed var(--lab-line);
 }
 .lab-layer:first-of-type { border-top: 0; }
@@ -44,15 +43,21 @@
   font-weight: 700;
   font-size: 0.9rem;
   color: var(--heading-color, inherit);
-  padding-top: 0.15rem;
+  margin-bottom: 0.5rem;
 }
-.lab-layer-kinds { display: flex; flex-direction: column; gap: 0.5rem; }
+.lab-layer-kinds { display: flex; flex-direction: column; gap: 0.7rem; }
 .lab-kind-name {
   font-size: 0.75rem;
   color: var(--text-muted-color, #888);
-  margin-bottom: 0.2rem;
+  margin-bottom: 0.3rem;
 }
-.lab-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+/* 칩 = 위에서 아래로 한 줄에 하나씩 */
+.lab-chips {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+}
 
 .lab-chip {
   display: inline-flex;
@@ -83,8 +88,8 @@
 .lab-chip-dot[data-layer="concept"] { background: #ef4444; }
 .lab-chip-dot[data-layer="model"] { background: #64748b; }
 
-/* ---- 토글 ---- */
-.lab-toggles { display: flex; gap: 0.5rem; margin: 1rem 0 0.5rem; }
+/* ---- 토글 (맨 위) ---- */
+.lab-toggles { display: flex; gap: 0.5rem; margin: 0 0 0.9rem; flex-wrap: wrap; }
 
 /* ---- 패널 공통 ---- */
 .lab-panel {
@@ -95,7 +100,108 @@
   margin-bottom: 0.9rem;
 }
 .lab-panel-title { margin: 0 0 0.7rem; font-size: 1rem; }
-.lab-panel-actions { display: flex; gap: 0.5rem; margin-top: 0.7rem; }
+.lab-panel-actions { display: flex; gap: 0.5rem; margin-top: 0.7rem; flex-wrap: wrap; }
+
+/* ---- 하단 고정 도크 (조합/합성 작업대) ---- */
+.lab-dock { display: contents; }
+
+.lab-dock .lab-panel {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1050;
+  margin: 0;
+  max-height: 46vh;
+  overflow-y: auto;
+  border-radius: 10px 10px 0 0;
+  border-bottom: 0;
+  box-shadow:
+    0 -12px 44px -10px rgb(34 224 255 / 35%),
+    0 -1px 0 var(--neon-cyan, #22e0ff);
+  animation: lab-dock-up 0.25s ease-out;
+}
+.lab-dock .lab-synth { box-shadow: 0 -12px 44px -10px rgb(255 59 212 / 35%), 0 -1px 0 var(--neon-magenta, #ff3bd4); }
+
+@keyframes lab-dock-up {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+/* 데스크톱: 사이드바 폭만큼 왼쪽을 비우고 같이 슬라이드 */
+@media (min-width: 850px) {
+  .lab-dock .lab-panel {
+    left: var(--sb-w, 260px);
+    transition: left 0.28s ease;
+  }
+}
+
+/* 모바일 내비 서랍이 열리면 도크 숨김 (가림 방지) */
+body[sidebar-display] .lab-dock .lab-panel { display: none; }
+
+.lab-dock-close {
+  float: right;
+  width: 1.7rem;
+  height: 1.7rem;
+  margin: -0.2rem -0.2rem 0 0.5rem;
+  padding: 0;
+  line-height: 1;
+  font-size: 0.9rem;
+  border: 1px solid var(--lab-line);
+  border-radius: 5px;
+  background: transparent;
+  color: var(--text-muted-color, #889);
+  cursor: pointer;
+}
+.lab-dock-close:hover {
+  border-color: var(--neon-magenta, #ff3bd4);
+  color: var(--neon-magenta, #ff3bd4);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lab-dock .lab-panel { animation: none; }
+}
+
+/* 조합 = 층 벨트 + 학습 방법, 나란히 */
+.lab-combine-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.7rem;
+}
+@media (min-width: 680px) {
+  .lab-combine-grid { grid-template-columns: minmax(0, 1fr) minmax(9rem, 13rem); align-items: start; }
+}
+.lab-combine-col { min-width: 0; }
+.lab-col-label {
+  font-size: 0.7rem;
+  color: var(--text-muted-color, #888);
+  margin-bottom: 0.3rem;
+  font-family: var(--mono-font, monospace);
+}
+
+.lab-train {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 0.4rem;
+  min-height: 3.4rem;
+  padding: 0.6rem 0.8rem;
+  background: #0a0a12;
+  border: 1px dashed var(--lab-line);
+  border-radius: 8px;
+}
+.lab-train.is-over {
+  border-style: solid;
+  box-shadow: inset 0 0 0 1px var(--neon-cyan, #22e0ff), 0 0 18px rgb(34 224 255 / 30%);
+}
+.lab-train.is-miss {
+  border-color: var(--neon-magenta, #ff3bd4);
+  animation: lab-shake 0.3s ease;
+}
+@keyframes lab-shake {
+  25% { transform: translateX(-3px); }
+  75% { transform: translateX(3px); }
+}
 
 .lab-belt, .lab-box {
   display: flex;
@@ -155,7 +261,7 @@
 }
 
 @media (max-width: 576px) {
-  .lab-layer { grid-template-columns: 1fr; gap: 0.3rem; }
+  .lab-dock .lab-panel { max-height: 58vh; }
 }
 
 /* ===== 사이버펑크 스킨 + 순환 구조 ===== */

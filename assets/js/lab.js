@@ -41,8 +41,9 @@
   if (!root) return;
 
   // ---- 상태 (페이지 안에서만) ----
-  var belt = [];   // 조합: 순서 있는 note id 배열
+  var belt = [];   // 조합: 순서 있는 note id 배열 (층)
   var beltLoop = false; // 조합: 끝 → 처음 되먹임(순환 구조) 여부
+  var train = [];  // 조합: 학습 방법(옵티마이저·손실함수 등), 순서 무관
   var box = [];    // 합성: 순서 없는 note id 배열
 
   // ---- 유틸 ----
@@ -56,6 +57,10 @@
     return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
       return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
     });
+  }
+  // 하단 도크 높이가 바뀌면 #lab-root 하단 여백을 다시 맞춘다 (resize 핸들러 재사용).
+  function relayoutDock() {
+    window.dispatchEvent(new Event("resize"));
   }
   function resultUrl(slug) {
     if (ALL_POSTS[slug] && ALL_POSTS[slug].url) return ALL_POSTS[slug].url;
@@ -142,18 +147,39 @@
   function buildCombinePanel() {
     var panel = el("section", "lab-panel lab-combine");
     panel.hidden = true;
-    panel.appendChild(el("h3", "lab-panel-title", "⚙ 조합 — 층을 순서대로"));
+    panel.appendChild(el("h3", "lab-panel-title", "⚙ 조합 — 층 + 학습 방법"));
     panel.appendChild(el("p", "lab-panel-note",
-      "적층형은 그대로 벨트에 올리고, <strong>순환 신경망</strong>처럼 되먹임이 있는 구조는 " +
-      "<strong>↩ 되먹임</strong>을 켜서 끝을 처음으로 이어 주세요."));
+      "왼쪽 벨트에 <strong>층</strong>을 순서대로, 오른쪽에 <strong>학습 방법</strong>(옵티마이저·손실함수 등)을 올립니다. " +
+      "<strong>순환 신경망</strong>은 <strong>↩ 되먹임</strong>을 켜서 끝을 처음으로 이어 주세요."));
 
+    var grid = el("div", "lab-combine-grid");
+
+    var beltCol = el("div", "lab-combine-col");
+    beltCol.appendChild(el("div", "lab-col-label", "① 층 — 순서대로 (적층/순환)"));
     var belt$ = el("div", "lab-belt");
     belt$.appendChild(el("span", "lab-belt-cap", "입력 ⟶"));
     var slots = el("div", "lab-belt-slots");
     belt$.appendChild(slots);
     belt$.appendChild(el("span", "lab-belt-cap", "⟶ 출력"));
     wireDropzone(belt$, function (id) { belt.push(id); renderBelt(); });
-    panel.appendChild(belt$);
+    beltCol.appendChild(belt$);
+    grid.appendChild(beltCol);
+
+    var trainCol = el("div", "lab-combine-col lab-train-col");
+    trainCol.appendChild(el("div", "lab-col-label", "② 학습 방법 — 선택 (옵티마이저·손실함수 등)"));
+    var train$ = el("div", "lab-train");
+    wireDropzone(train$, function (id) {
+      if ((byId[id].layer || "") !== "training") {
+        flashMiss(train$);
+        return;
+      }
+      if (train.indexOf(id) === -1) train.push(id);
+      renderTrain();
+    });
+    trainCol.appendChild(train$);
+    grid.appendChild(trainCol);
+
+    panel.appendChild(grid);
 
     var actions = el("div", "lab-panel-actions");
     var build = el("button", "btn btn-primary btn-sm", "⚙ 제작");
@@ -168,9 +194,9 @@
       renderBelt();
     });
     clear.addEventListener("click", function () {
-      belt = []; beltLoop = false;
+      belt = []; train = []; beltLoop = false;
       loop.textContent = "↩ 되먹임: 꺼짐"; loop.classList.remove("is-on");
-      renderBelt(); result.innerHTML = "";
+      renderBelt(); renderTrain(); result.innerHTML = "";
     });
     actions.appendChild(build); actions.appendChild(loop); actions.appendChild(clear);
     panel.appendChild(actions);
@@ -179,6 +205,7 @@
     panel.appendChild(result);
 
     panel._slots = slots;
+    panel._train = train$;
     panel._result = result;
     return panel;
 
@@ -194,39 +221,75 @@
       });
       if (!belt.length) slots.appendChild(el("span", "lab-empty", "부품을 여기로 드래그"));
       belt$.classList.toggle("is-recurrent", beltLoop && belt.length > 0);
+      relayoutDock();
+    }
+
+    function renderTrain() {
+      train$.innerHTML = "";
+      train.forEach(function (id, i) {
+        if (i > 0) train$.appendChild(el("span", "lab-plus", "+"));
+        var n = byId[id];
+        var s = el("span", "lab-slot", chipInner(n));
+        s.title = "클릭하면 제거";
+        s.addEventListener("click", function () { train.splice(i, 1); renderTrain(); });
+        train$.appendChild(s);
+      });
+      if (!train.length) train$.appendChild(el("span", "lab-empty", "학습 방법을 여기로 (선택)"));
+      relayoutDock();
     }
   }
 
+  function flashMiss(zone) {
+    zone.classList.add("is-miss");
+    setTimeout(function () { zone.classList.remove("is-miss"); }, 400);
+  }
+
   function runCombine() {
-    var panel = root.querySelector(".lab-combine");
+    var panel = document.querySelector(".lab-combine");
     var out = panel._result;
-    var hit = recognizeCombine(belt, beltLoop);
+    var hit = recognizeCombine(belt, beltLoop, train);
+    var trainStr = train.map(function (id) {
+      return (byId[id] && byId[id].title) || id;
+    }).join(" + ");
+    var trainLine = trainStr
+      ? '<div class="lab-result-hint">🎓 학습: ' + esc(trainStr) + '</div>'
+      : "";
     if (hit) {
       out.className = "lab-result is-hit";
       out.innerHTML = '✨ ' + (hit.recurrent ? '<span class="lab-badge">순환</span> ' : '<span class="lab-badge is-ff">적층</span> ') +
         '<a href="' + esc(resultUrl(hit.post)) + '">' +
         esc(resultTitle(hit.post, hit.label)) + '</a> 완성!' +
-        (hit.hint ? '<div class="lab-result-hint">' + esc(hit.hint) + '</div>' : "");
+        (hit.hint ? '<div class="lab-result-hint">' + esc(hit.hint) + '</div>' : "") +
+        trainLine;
     } else {
       out.className = "lab-result is-miss";
-      out.textContent = beltLoop
+      out.innerHTML = esc(beltLoop
         ? "❌ 이 되먹임 구조로 인식되는 모델이 없습니다. (순환 셀 + 완전연결이 필요할 수 있어요)"
-        : "❌ 인식된 모델이 없습니다. 순서를 확인하거나 ↩ 되먹임을 켜 보세요.";
+        : "❌ 인식된 모델이 없습니다. 순서를 확인하거나 ↩ 되먹임을 켜 보세요.") + trainLine;
     }
+    relayoutDock();
   }
 
   // recurrent(되먹임) 여부가 레시피와 일치해야 인식.
   //   레시피에 recurrent: true  → 벨트 되먹임이 켜져 있을 때만
   //   레시피에 recurrent 없음/false → 되먹임이 꺼져 있을 때만
-  function recognizeCombine(seq, recurrent) {
+  //   레시피에 train: [slug...] 있으면 학습 방법 칸이 그 slug 들을 모두 포함해야 함 (없으면 무시).
+  function recognizeCombine(seq, recurrent, trainIds) {
     if (!seq.length) return null;
     recurrent = !!recurrent;
+    var trainSet = {};
+    (trainIds || []).forEach(function (x) { trainSet[x] = true; });
+    function trainOk(r) {
+      return !Array.isArray(r.train) || r.train.every(function (x) { return trainSet[x]; });
+    }
     var exact = RECIPES.find(function (r) {
-      return !!r.recurrent === recurrent && Array.isArray(r.sequence) && arrEq(r.sequence, seq);
+      return !!r.recurrent === recurrent && trainOk(r) &&
+        Array.isArray(r.sequence) && arrEq(r.sequence, seq);
     });
     if (exact) return exact;
     return RECIPES.find(function (r) {
-      return !!r.recurrent === recurrent && Array.isArray(r.loose) && looseMatch(r.loose, seq);
+      return !!r.recurrent === recurrent && trainOk(r) &&
+        Array.isArray(r.loose) && looseMatch(r.loose, seq);
     }) || null;
   }
 
@@ -280,11 +343,12 @@
         box$.appendChild(s);
       });
       if (!box.length) box$.appendChild(el("span", "lab-empty", "개념을 여기로 드래그"));
+      relayoutDock();
     }
   }
 
   function runSynth() {
-    var panel = root.querySelector(".lab-synth");
+    var panel = document.querySelector(".lab-synth");
     var out = panel._result;
     var hit = recognizeSynth(box);
     if (hit) {
@@ -295,6 +359,7 @@
       out.className = "lab-result is-miss";
       out.textContent = "❌ 이 조합으로 나오는 개념이 없습니다.";
     }
+    relayoutDock();
   }
 
   function recognizeSynth(ids) {
@@ -319,34 +384,70 @@
   // ---- 조립 ----
   function render() {
     root.innerHTML = "";
-    root.appendChild(buildDashboard());
 
+    // (2) 토글 버튼을 맨 위로
     var toggles = el("div", "lab-toggles");
-    var tC = el("button", "btn btn-outline-primary btn-sm", "＋ 조합 열기");
-    var tS = el("button", "btn btn-outline-primary btn-sm", "＋ 합성 열기");
+    var tC = el("button", "btn btn-outline-primary btn-sm", "＋ 조합 작업대");
+    var tS = el("button", "btn btn-outline-primary btn-sm", "＋ 합성 작업대");
     tC.type = tS.type = "button";
     toggles.appendChild(tC); toggles.appendChild(tS);
     root.appendChild(toggles);
 
+    root.appendChild(buildDashboard());
+
+    // (3) 조합/합성 패널을 화면 하단 고정 도크로.
+    //     transform 걸린 조상(모바일 사이드바) 밑에서 fixed 가 깨지지 않도록 body 직속.
+    var old = document.getElementById("lab-dock");
+    if (old) old.remove();
+    var dock = el("div", "lab-dock");
+    dock.id = "lab-dock";
+
     var combine = buildCombinePanel();
     var synth = buildSynthPanel();
-    root.appendChild(combine);
-    root.appendChild(synth);
+    dock.appendChild(combine);
+    dock.appendChild(synth);
+    document.body.appendChild(dock);
 
-    tC.addEventListener("click", function () {
-      combine.hidden = !combine.hidden;
-      tC.textContent = (combine.hidden ? "＋ 조합 열기" : "－ 조합 닫기");
-      if (!combine.hidden) combine.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    // 패널마다 ✕ 닫기 버튼
+    [combine, synth].forEach(function (p) {
+      var x = el("button", "lab-dock-close", "✕");
+      x.type = "button";
+      x.setAttribute("aria-label", "작업대 닫기");
+      x.addEventListener("click", function () { setOpen(null); });
+      p.querySelector(".lab-panel-title").appendChild(x);
     });
-    tS.addEventListener("click", function () {
-      synth.hidden = !synth.hidden;
-      tS.textContent = (synth.hidden ? "＋ 합성 열기" : "－ 합성 닫기");
-      if (!synth.hidden) synth.scrollIntoView({ behavior: "smooth", block: "nearest" });
+
+    function syncDockPadding() {
+      var open = dock.querySelector(".lab-panel:not([hidden])");
+      root.style.paddingBottom = open ? (open.offsetHeight + 24) + "px" : "";
+    }
+
+    function setOpen(which) {
+      var openC = which === "combine";
+      var openS = which === "synth";
+      combine.hidden = !openC;
+      synth.hidden = !openS;
+      tC.textContent = openC ? "－ 조합 작업대 닫기" : "＋ 조합 작업대";
+      tS.textContent = openS ? "－ 합성 작업대 닫기" : "＋ 합성 작업대";
+      tC.classList.toggle("is-on", openC);
+      tS.classList.toggle("is-on", openS);
+      dock.classList.toggle("is-open", openC || openS);
+      root.classList.toggle("lab-dock-open", openC || openS);
+      syncDockPadding();
+    }
+
+    tC.addEventListener("click", function () { setOpen(combine.hidden ? "combine" : null); });
+    tS.addEventListener("click", function () { setOpen(synth.hidden ? "synth" : null); });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && dock.classList.contains("is-open")) setOpen(null);
     });
+    window.addEventListener("resize", syncDockPadding);
 
     // 초기 렌더
     combine._slots.appendChild(el("span", "lab-empty", "부품을 여기로 드래그"));
+    combine._train.appendChild(el("span", "lab-empty", "학습 방법을 여기로 (선택)"));
     synth._box.appendChild(el("span", "lab-empty", "개념을 여기로 드래그"));
+    setOpen(null);
   }
 
   if (!NOTES.length) {
