@@ -6,14 +6,15 @@
 <title>HOTEASIK — 신경망 조립 공장</title>
 <meta name="description" content="부품을 컨베이어에 순서대로 올려 LeNet-5, CNN 같은 신경망 구조를 조립하는 스팀펑크 공장 블로그">
 <link rel="icon" href="data:,">
-<script defer src="https://cdn.jsdelivr.net/npm/marked@9.1.6/marked.min.js"></script>
+<!-- marked.js는 글을 처음 열 때 factory.js가 아니라 app.js가 지연 로딩함 (초기 로딩 최적화) -->
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
-<button class="sidebar-toggle" id="sidebar-toggle" aria-label="사이드바 열기">☰</button>
+<button class="btn btn-icon sidebar-toggle" id="sidebar-toggle" aria-label="사이드바 열기">☰</button>
 
 <div class="app">
   <aside class="sidebar" id="sidebar">
@@ -59,9 +60,9 @@
       <div class="canvas-hint">스크롤 확대·축소 · 드래그 이동 · 카드 클릭으로 열기 · 부품은 작업대 아무 곳에나 드래그</div>
 
       <div class="zoom-controls">
-        <button id="zoom-in" title="확대">＋</button>
-        <button id="zoom-reset" title="가운데로">◎</button>
-        <button id="zoom-out" title="축소">－</button>
+        <button class="btn btn-icon" id="zoom-in" title="확대">＋</button>
+        <button class="btn btn-icon" id="zoom-reset" title="가운데로">◎</button>
+        <button class="btn btn-icon" id="zoom-out" title="축소">－</button>
       </div>
     </main>
 
@@ -73,8 +74,8 @@
         <span class="assembly-label">⟶ 출력</span>
       </div>
       <div class="assembly-actions">
-        <button class="assembly-build" id="assembly-build-btn" type="button">⚙ 제작</button>
-        <button class="assembly-clear" id="assembly-clear" type="button">초기화</button>
+        <button class="btn btn-primary assembly-build" id="assembly-build-btn" type="button">⚙ 제작</button>
+        <button class="btn btn-ghost assembly-clear" id="assembly-clear" type="button">초기화</button>
       </div>
     </section>
   </div>
@@ -82,7 +83,7 @@
   <section class="reader" id="reader" aria-hidden="true">
     <div class="reader-backdrop" id="reader-backdrop"></div>
     <article class="reader-panel" id="reader-panel">
-      <button class="reader-close" id="reader-close" aria-label="닫기">✕</button>
+      <button class="btn btn-icon reader-close" id="reader-close" aria-label="닫기">✕</button>
       <div class="reader-meta" id="reader-meta"></div>
       <h1 id="reader-title"></h1>
       <div class="reader-tags" id="reader-tags"></div>
@@ -94,7 +95,7 @@
   <section class="part-detail" id="part-detail" aria-hidden="true">
     <div class="part-detail-backdrop" id="part-detail-backdrop"></div>
     <article class="part-detail-panel" id="part-detail-panel">
-      <button class="reader-close" id="part-detail-close" aria-label="닫기">✕</button>
+      <button class="btn btn-icon reader-close" id="part-detail-close" aria-label="닫기">✕</button>
       <img class="part-detail-icon" id="part-detail-icon" alt="">
       <h2 id="part-detail-title"></h2>
       <div class="part-detail-desc" id="part-detail-desc"></div>
@@ -104,6 +105,8 @@
   </section>
 </div>
 
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/graph.js"></script>
 <script src="assets/js/app.js"></script>
 <script src="assets/js/factory.js"></script>
 </body>

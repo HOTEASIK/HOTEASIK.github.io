@@ -2,6 +2,12 @@
 (function () {
   "use strict";
 
+  // 공용 유틸(utils.js)에서 가져다 씀 — 중복 구현하지 않음
+  var escapeHtml = window.HoteasikUtils.escapeHtml;
+  var cssEscape = window.HoteasikUtils.cssEscapeAttr;
+  var parseFrontmatter = window.HoteasikUtils.parseFrontmatter;
+  var toArray = window.HoteasikUtils.toArray;
+
   var POST_DIR = "_post/";
   var MANIFEST = POST_DIR + "manifest.json";
 
@@ -99,29 +105,6 @@
     };
   }
 
-  function parseFrontmatter(raw) {
-    var m = raw.match(/^---\s*\n([\s\S]*?)\n---\s*\n?([\s\S]*)$/);
-    if (!m) return { meta: {}, body: raw };
-    var meta = {};
-    m[1].split("\n").forEach(function (line) {
-      var idx = line.indexOf(":");
-      if (idx === -1) return;
-      var key = line.slice(0, idx).trim();
-      var val = line.slice(idx + 1).trim();
-      meta[key] = val;
-    });
-    return { meta: meta, body: m[2] };
-  }
-
-  function toArray(val) {
-    if (!val) return [];
-    var s = String(val).trim();
-    if (s.startsWith("[") && s.endsWith("]")) s = s.slice(1, -1);
-    return s.split(",").map(function (x) {
-      return x.trim().replace(/^["']|["']$/g, "");
-    }).filter(Boolean);
-  }
-
   function makeExcerpt(body) {
     var text = body
       .replace(/```[\s\S]*?```/g, "")
@@ -150,6 +133,7 @@
       els.postList.innerHTML = '<div class="post-list-empty">아직 글이 없습니다.</div>';
       return;
     }
+    var frag = document.createDocumentFragment();
     state.posts.forEach(function (p) {
       var match = !filter || matchesFilter(p, filter);
       var item = document.createElement("div");
@@ -165,8 +149,9 @@
         e.dataTransfer.effectAllowed = "copy";
         e.stopPropagation();
       });
-      els.postList.appendChild(item);
+      frag.appendChild(item);
     });
+    els.postList.appendChild(frag);
   }
 
   function matchesFilter(p, filter) {
@@ -177,6 +162,7 @@
 
   function renderCards() {
     els.cards.innerHTML = "";
+    var frag = document.createDocumentFragment();
     state.posts.forEach(function (p) {
       var card = document.createElement("div");
       card.className = "card";
@@ -191,13 +177,15 @@
           return '<span class="tag">#' + escapeHtml(t) + '</span>';
         }).join("") + '</div>';
       card.addEventListener("click", function () { openPost(p.id, card); });
-      els.cards.appendChild(card);
+      frag.appendChild(card);
     });
+    els.cards.appendChild(frag);
   }
 
   function renderEdges() {
     var ns = "http://www.w3.org/2000/svg";
     els.edges.innerHTML = "";
+    var frag = document.createDocumentFragment();
     var seen = {};
     state.posts.forEach(function (p) {
       p.links.forEach(function (targetId) {
@@ -214,62 +202,17 @@
         line.setAttribute("x2", x2 + 2000);
         line.setAttribute("y2", y2 + 2000);
         line.setAttribute("class", "edge-line");
-        els.edges.appendChild(line);
+        frag.appendChild(line);
       });
     });
+    els.edges.appendChild(frag);
   }
 
+  // 초기 페인트: 부품 트리가 아직 없으니 글끼리 백링크만 있는 그래프.
+  // factory.js가 준비되면 window.HoteasikGraph.render를 다시 호출해 부품 트리까지 합쳐 덮어그림.
   function renderGraph() {
-    var ns = "http://www.w3.org/2000/svg";
-    els.graphSvg.innerHTML = "";
-    var posts = state.posts;
-    if (!posts.length) return;
-    var cx = 120, cy = 85, r = 60;
-    var pos = {};
-    posts.forEach(function (p, i) {
-      var angle = (i / posts.length) * Math.PI * 2 - Math.PI / 2;
-      pos[p.id] = { x: cx + r * Math.cos(angle), y: cy + r * Math.sin(angle) };
-    });
-
-    var seen = {};
-    posts.forEach(function (p) {
-      p.links.forEach(function (targetId) {
-        if (!pos[targetId]) return;
-        var key = [p.id, targetId].sort().join("|");
-        if (seen[key]) return;
-        seen[key] = true;
-        var a = pos[p.id], b = pos[targetId];
-        var line = document.createElementNS(ns, "line");
-        line.setAttribute("x1", a.x);
-        line.setAttribute("y1", a.y);
-        line.setAttribute("x2", b.x);
-        line.setAttribute("y2", b.y);
-        line.setAttribute("class", "graph-edge");
-        els.graphSvg.appendChild(line);
-      });
-    });
-
-    posts.forEach(function (p) {
-      var g = document.createElementNS(ns, "g");
-      g.setAttribute("class", "graph-node");
-      g.dataset.id = p.id;
-      var c = document.createElementNS(ns, "circle");
-      c.setAttribute("cx", pos[p.id].x);
-      c.setAttribute("cy", pos[p.id].y);
-      c.setAttribute("r", 5);
-      var t = document.createElementNS(ns, "text");
-      t.setAttribute("x", pos[p.id].x);
-      t.setAttribute("y", pos[p.id].y + 13);
-      t.setAttribute("text-anchor", "middle");
-      t.textContent = truncate(p.title, 10);
-      g.appendChild(c);
-      g.appendChild(t);
-      g.addEventListener("click", function () { flyToAndOpen(p.id); });
-      els.graphSvg.appendChild(g);
-    });
+    window.HoteasikGraph.render(els.graphSvg, { posts: state.posts }, { onOpenPost: flyToAndOpen });
   }
-
-  function truncate(s, n) { return s.length > n ? s.slice(0, n) + "…" : s; }
 
   /* ---------- Canvas zoom / pan ---------- */
 
@@ -410,17 +353,15 @@
       return '<span class="tag">#' + escapeHtml(t) + '</span>';
     }).join("");
 
-    var html = (window.marked && window.marked.parse)
-      ? window.marked.parse(linkifyWikiLinks(post.bodyRaw))
-      : escapeHtml(post.bodyRaw).replace(/\n/g, "<br>");
-    els.readerBody.innerHTML = html;
-
-    els.readerBody.querySelectorAll("a[data-wikilink]").forEach(function (a) {
-      a.addEventListener("click", function (e) {
-        e.preventDefault();
-        openPost(a.dataset.wikilink, null);
+    renderReaderBody(post);
+    if (!(window.marked && window.marked.parse)) {
+      // 마크다운 라이브러리를 아직 안 불러왔으면 지금 지연 로딩하고, 로딩되면 같은 글이 열려있을 때만 업그레이드
+      ensureMarked().then(function () {
+        if (els.reader.classList.contains("is-open") && location.hash === "#" + id) {
+          renderReaderBody(post);
+        }
       });
-    });
+    }
 
     if (post.links.length) {
       els.readerLinks.innerHTML = '<div class="reader-links-title">연결된 글</div>' +
@@ -451,6 +392,37 @@
     });
   }
 
+  var markedLoadPromise = null;
+  var MARKED_URL = "https://cdn.jsdelivr.net/npm/marked@9.1.6/marked.min.js";
+
+  // marked.js는 처음 글을 열 때만 불러옴 (초기 페이지 로딩 최적화). 실패해도 아래 폴백 렌더링으로 계속 동작.
+  function ensureMarked() {
+    if (window.marked && window.marked.parse) return Promise.resolve();
+    if (markedLoadPromise) return markedLoadPromise;
+    markedLoadPromise = new Promise(function (resolve) {
+      var s = document.createElement("script");
+      s.src = MARKED_URL;
+      s.onload = function () { resolve(); };
+      s.onerror = function () { resolve(); };
+      document.head.appendChild(s);
+    });
+    return markedLoadPromise;
+  }
+
+  function renderReaderBody(post) {
+    var html = (window.marked && window.marked.parse)
+      ? window.marked.parse(linkifyWikiLinks(post.bodyRaw))
+      : escapeHtml(post.bodyRaw).replace(/\n/g, "<br>");
+    els.readerBody.innerHTML = html;
+
+    els.readerBody.querySelectorAll("a[data-wikilink]").forEach(function (a) {
+      a.addEventListener("click", function (e) {
+        e.preventDefault();
+        openPost(a.dataset.wikilink, null);
+      });
+    });
+  }
+
   function linkifyWikiLinks(text) {
     return text.replace(/\[\[(.*?)\]\]/g, function (_, id) {
       var p = state.byId[id.trim()];
@@ -465,18 +437,6 @@
       els.reader.classList.remove("is-open");
     }, 200);
     history.replaceState(null, "", location.pathname);
-  }
-
-  /* ---------- utils ---------- */
-
-  function escapeHtml(s) {
-    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
-      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
-    });
-  }
-
-  function cssEscape(s) {
-    return String(s).replace(/["\\]/g, "\\$&");
   }
 
   window.addEventListener("resize", function () {

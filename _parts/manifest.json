@@ -21,7 +21,14 @@
             { "type": "part", "path": "hidden/pooling/avgpool" }
           ]
         },
-        { "type": "part", "path": "hidden/fc" }
+        { "type": "part", "path": "hidden/fc" },
+        {
+          "type": "folder",
+          "label": "순환",
+          "children": [
+            { "type": "part", "path": "hidden/recurrent/rnn" }
+          ]
+        }
       ]
     },
     {

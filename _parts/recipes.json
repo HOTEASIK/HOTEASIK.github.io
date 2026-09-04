@@ -13,5 +13,13 @@
     "loosePattern": ["input", "conv", "pool", "fc"],
     "postId": "cnn",
     "hint": "입력 다음에 합성곱 → 풀링(종류무관) → 완전연결 이 이 순서로만 한 번씩 나오면 인식"
+  },
+  {
+    "id": "rnn-generic",
+    "label": "RNN (순환 신경망)",
+    "loose": true,
+    "loosePattern": ["input", "recurrent", "fc"],
+    "postId": "rnn",
+    "hint": "입력 다음에 순환 → 완전연결 이 순서로만 한 번씩 나오면 인식"
   }
 ]

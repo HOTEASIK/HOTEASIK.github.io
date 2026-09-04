@@ -2,6 +2,12 @@
 (function () {
   "use strict";
 
+  // 공용 유틸(utils.js)에서 가져다 씀 — 중복 구현하지 않음
+  var escapeHtml = window.HoteasikUtils.escapeHtml;
+  var escapeAttr = window.HoteasikUtils.escapeAttr;
+  var cssEscapeAttr = window.HoteasikUtils.cssEscapeAttr;
+  var parseFrontmatter = window.HoteasikUtils.parseFrontmatter;
+
   var PARTS_DIR = "_parts/";
   var MANIFEST_URL = PARTS_DIR + "manifest.json";
   var RECIPES_URL = PARTS_DIR + "recipes.json";
@@ -121,21 +127,14 @@
       icon: PARTS_DIR + path + "/" + iconFile,
       desc: fm.body.trim(),
       postId: meta.postId || null,
+      recurrent: meta.recurrent === "true",
     };
   }
 
-  function parseFrontmatter(raw) {
-    var m = raw.match(/^---\s*\n([\s\S]*?)\n---\s*\n?([\s\S]*)$/);
-    if (!m) return { meta: {}, body: raw };
-    var meta = {};
-    m[1].split("\n").forEach(function (line) {
-      var idx = line.indexOf(":");
-      if (idx === -1) return;
-      var key = line.slice(0, idx).trim();
-      var val = line.slice(idx + 1).trim().replace(/^["']|["']$/g, "");
-      meta[key] = val;
-    });
-    return { meta: meta, body: m[2] };
+  function badgeHtml(part) {
+    return part.recurrent
+      ? ' <span class="recur-badge" title="매 타임스텝마다 반복">↻</span>'
+      : "";
   }
 
   /* ---------- 글(post) 쪽과 연결 — 그래프 합치기용 ---------- */
@@ -157,9 +156,11 @@
 
   function renderPartsTree() {
     els.partsTree.innerHTML = "";
+    var frag = document.createDocumentFragment();
     (tree.children || []).forEach(function (child) {
-      els.partsTree.appendChild(renderTreeNode(child, 0));
+      frag.appendChild(renderTreeNode(child, 0));
     });
+    els.partsTree.appendChild(frag);
   }
 
   function renderTreeNode(node, depth) {
@@ -206,7 +207,7 @@
     chip.dataset.id = p.id;
     chip.style.paddingLeft = (6 + depth * 14) + "px";
     chip.innerHTML = '<img src="' + escapeAttr(p.icon) + '" alt="">' +
-      '<span>' + escapeHtml(p.label) + '</span>';
+      '<span>' + escapeHtml(p.label) + badgeHtml(p) + '</span>';
 
     chip.addEventListener("dragstart", function (e) {
       e.dataTransfer.setData("text/plain", JSON.stringify({ kind: "part", id: p.id }));
@@ -287,7 +288,7 @@
     el.style.left = (x - 28) + "px";
     el.style.top = (y - 28) + "px";
     el.innerHTML = '<img src="' + escapeAttr(p.icon) + '" alt="">' +
-      '<span>' + escapeHtml(p.label) + '</span>';
+      '<span>' + escapeHtml(p.label) + badgeHtml(p) + '</span>';
     el.title = "클릭하면 작업대에서 치웁니다";
     el.addEventListener("click", function () { el.remove(); });
     els.placedParts.appendChild(el);
@@ -328,25 +329,27 @@
 
   function renderAssembly() {
     els.assemblySlots.innerHTML = "";
+    var frag = document.createDocumentFragment();
     sequence.forEach(function (id, i) {
       if (i > 0) {
         var arrow = document.createElement("span");
         arrow.className = "assembly-arrow";
         arrow.textContent = "→";
-        els.assemblySlots.appendChild(arrow);
+        frag.appendChild(arrow);
       }
       var p = partsById[id];
       var slot = document.createElement("div");
       slot.className = "assembly-slot";
       slot.title = "클릭하면 컨베이어에서 치웁니다";
       slot.innerHTML = '<img src="' + escapeAttr(p.icon) + '" alt="">' +
-        '<span>' + escapeHtml(p.label) + '</span>';
+        '<span>' + escapeHtml(p.label) + badgeHtml(p) + '</span>';
       slot.addEventListener("click", function () {
         sequence.splice(i, 1);
         renderAssembly();
       });
-      els.assemblySlots.appendChild(slot);
+      frag.appendChild(slot);
     });
+    els.assemblySlots.appendChild(frag);
     showIdle();
   }
 
@@ -445,7 +448,7 @@
     var p = partsById[id];
     if (!p) return;
     els.partDetailIcon.src = p.icon;
-    els.partDetailTitle.textContent = p.label;
+    els.partDetailTitle.innerHTML = escapeHtml(p.label) + badgeHtml(p);
     els.partDetailDesc.textContent = p.desc || "";
 
     els.partDetailLink.innerHTML = "";
@@ -475,210 +478,21 @@
     }, 200);
   }
 
-  /* ---------- 그래프: 부품 창고 트리 + 글을 한 그래프에 배치 ---------- */
+  /* ---------- 그래프: 부품 창고 트리 + 글을 한 그래프에 배치 (실제 레이아웃/렌더링은 graph.js가 함) ---------- */
 
   function maybeRenderGraph() {
     if (!partsReady || !posts) return;
-    renderCombinedGraph();
-  }
-
-  function partsUsedByRecipe(recipe) {
-    if (recipe.sequence) return uniq(recipe.sequence);
-    if (recipe.loosePattern) {
-      var byCategory = {};
-      parts.forEach(function (p) {
-        (byCategory[p.category] = byCategory[p.category] || []).push(p.id);
-      });
-      var ids = [];
-      recipe.loosePattern.forEach(function (cat) {
-        (byCategory[cat] || []).forEach(function (id) { ids.push(id); });
-      });
-      return uniq(ids);
-    }
-    return [];
-  }
-
-  function uniq(arr) {
-    var seen = {}, out = [];
-    arr.forEach(function (v) { if (!seen[v]) { seen[v] = true; out.push(v); } });
-    return out;
-  }
-
-  // 트리 구조를 그대로 방사형(radial)으로 배치: 카테고리 폴더 → 하위 폴더/부품 순으로 각도를 나눠 가짐
-  function layoutTree(cx, cy) {
-    var positions = {};
-    var kids = tree.children || [];
-    var span = (Math.PI * 2) / Math.max(kids.length, 1);
-    kids.forEach(function (child, i) {
-      layoutNode(child, -Math.PI / 2 + i * span, -Math.PI / 2 + (i + 1) * span, 0, positions, cx, cy);
-    });
-    return positions;
-  }
-
-  function layoutNode(node, angleStart, angleEnd, depth, positions, cx, cy) {
-    var mid = (angleStart + angleEnd) / 2;
-    var r = 16 + depth * 21;
-    positions[node.gkey] = { x: cx + r * Math.cos(mid), y: cy + r * Math.sin(mid) };
-    var kids = node.children || [];
-    if (kids.length) {
-      var span = (angleEnd - angleStart) / kids.length;
-      kids.forEach(function (c, i) {
-        layoutNode(c, angleStart + i * span, angleStart + (i + 1) * span, depth + 1, positions, cx, cy);
-      });
-    }
-  }
-
-  function renderCombinedGraph() {
-    var ns = "http://www.w3.org/2000/svg";
-    var svg = els.graphSvg;
-    svg.innerHTML = "";
-
-    var cx = 120, cy = 82;
-    var positions = layoutTree(cx, cy);
-
-    var postR = 74;
-    posts.forEach(function (p, i) {
-      var angle = (i / posts.length) * Math.PI * 2 - Math.PI / 2;
-      positions["post:" + p.id] = { x: cx + postR * Math.cos(angle), y: cy + postR * Math.sin(angle) };
-    });
-
-    var edges = [];
-    var seenEdge = {};
-
-    // 트리 부모-자식 선
-    (function walk(node) {
-      (node.children || []).forEach(function (child) {
-        edges.push({ a: node.gkey, b: child.gkey, kind: "tree" });
-        walk(child);
-      });
-    })(tree);
-
-    // 글끼리 백링크
-    posts.forEach(function (p) {
-      (p.links || []).forEach(function (targetId) {
-        if (!posts.some(function (pp) { return pp.id === targetId; })) return;
-        var key = ["post:" + p.id, "post:" + targetId].sort().join("|");
-        if (seenEdge[key]) return;
-        seenEdge[key] = true;
-        edges.push({ a: "post:" + p.id, b: "post:" + targetId, kind: "post" });
-      });
-    });
-
-    // 레시피가 쓰는 부품 → 완성되는 글
-    recipes.forEach(function (recipe) {
-      if (!recipe.postId) return;
-      partsUsedByRecipe(recipe).forEach(function (partId) {
-        var part = partsById[partId];
-        if (!part) return;
-        var key = "part:" + part.path + "|post:" + recipe.postId;
-        if (seenEdge[key]) return;
-        seenEdge[key] = true;
-        edges.push({ a: "part:" + part.path, b: "post:" + recipe.postId, kind: "recipe" });
-      });
-    });
-
-    // 부품 자신이 postId를 갖고 있으면(예: 완성 구조 부품) 그 글로 바로 연결
-    parts.forEach(function (part) {
-      if (!part.postId || !posts.some(function (pp) { return pp.id === part.postId; })) return;
-      var key = "part:" + part.path + "|post:" + part.postId;
-      if (seenEdge[key]) return;
-      seenEdge[key] = true;
-      edges.push({ a: "part:" + part.path, b: "post:" + part.postId, kind: "recipe" });
-    });
-
-    edges.forEach(function (e) {
-      var a = positions[e.a], b = positions[e.b];
-      if (!a || !b) return;
-      var line = document.createElementNS(ns, "line");
-      line.setAttribute("x1", a.x);
-      line.setAttribute("y1", a.y);
-      line.setAttribute("x2", b.x);
-      line.setAttribute("y2", b.y);
-      line.setAttribute("class", "graph-edge" + (e.kind === "recipe" ? " graph-edge-recipe" : ""));
-      svg.appendChild(line);
-    });
-
-    // 부품/폴더 노드 (트리 재귀)
-    (function walk(node) {
-      var pos = positions[node.gkey];
-      if (pos) {
-        if (node.type === "folder") {
-          svg.appendChild(makeFolderNode(node, pos));
-        } else {
-          svg.appendChild(makePartNode(node.part, pos));
-        }
+    window.HoteasikGraph.render(
+      els.graphSvg,
+      { posts: posts, tree: tree, parts: parts, partsById: partsById, recipes: recipes },
+      {
+        onOpenPost: function (id) {
+          if (window.Hoteasik && window.Hoteasik.openPost) window.Hoteasik.openPost(id, null);
+        },
+        onOpenPart: openPartDetail,
+        onFocusFolder: focusSidebarFolder,
       }
-      (node.children || []).forEach(walk);
-    })(tree);
-
-    // 글 노드
-    posts.forEach(function (p) {
-      var pos = positions["post:" + p.id];
-      if (pos) svg.appendChild(makePostNode(p, pos));
-    });
-
-    function makeFolderNode(node, pos) {
-      var g = document.createElementNS(ns, "g");
-      g.setAttribute("class", "graph-node is-folder");
-      g.dataset.gkey = node.gkey;
-      var rect = document.createElementNS(ns, "rect");
-      rect.setAttribute("x", pos.x - 5);
-      rect.setAttribute("y", pos.y - 5);
-      rect.setAttribute("width", 10);
-      rect.setAttribute("height", 10);
-      rect.setAttribute("rx", 2);
-      var t = document.createElementNS(ns, "text");
-      t.setAttribute("x", pos.x);
-      t.setAttribute("y", pos.y + 13);
-      t.setAttribute("text-anchor", "middle");
-      t.textContent = truncate(node.label, 8);
-      g.appendChild(rect);
-      g.appendChild(t);
-      g.addEventListener("click", function () { focusSidebarFolder(node.gkey); });
-      return g;
-    }
-
-    function makePartNode(p, pos) {
-      var g = document.createElementNS(ns, "g");
-      g.setAttribute("class", "graph-node is-part");
-      g.dataset.id = p.id;
-      g.dataset.type = "part";
-      var c = document.createElementNS(ns, "circle");
-      c.setAttribute("cx", pos.x);
-      c.setAttribute("cy", pos.y);
-      c.setAttribute("r", 4);
-      var t = document.createElementNS(ns, "text");
-      t.setAttribute("x", pos.x);
-      t.setAttribute("y", pos.y + 12);
-      t.setAttribute("text-anchor", "middle");
-      t.textContent = truncate(p.label, 8);
-      g.appendChild(c);
-      g.appendChild(t);
-      g.addEventListener("click", function () { openPartDetail(p.id); });
-      return g;
-    }
-
-    function makePostNode(p, pos) {
-      var g = document.createElementNS(ns, "g");
-      g.setAttribute("class", "graph-node");
-      g.dataset.id = p.id;
-      g.dataset.type = "post";
-      var c = document.createElementNS(ns, "circle");
-      c.setAttribute("cx", pos.x);
-      c.setAttribute("cy", pos.y);
-      c.setAttribute("r", 5.5);
-      var t = document.createElementNS(ns, "text");
-      t.setAttribute("x", pos.x);
-      t.setAttribute("y", pos.y + 13);
-      t.setAttribute("text-anchor", "middle");
-      t.textContent = truncate(p.title, 9);
-      g.appendChild(c);
-      g.appendChild(t);
-      g.addEventListener("click", function () {
-        if (window.Hoteasik && window.Hoteasik.openPost) window.Hoteasik.openPost(p.id, null);
-      });
-      return g;
-    }
+    );
   }
 
   // 그래프의 폴더 노드를 클릭하면 사이드바에서 그 폴더를 펼치고 잠깐 반짝임
@@ -691,18 +505,4 @@
     row.classList.add("flash");
     setTimeout(function () { row.classList.remove("flash"); }, 900);
   }
-
-  function truncate(s, n) { return s.length > n ? s.slice(0, n) + "…" : s; }
-
-  /* ---------- utils ---------- */
-
-  function escapeHtml(s) {
-    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
-      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
-    });
-  }
-
-  function escapeAttr(s) { return escapeHtml(s); }
-
-  function cssEscapeAttr(s) { return String(s).replace(/["\\]/g, "\\$&"); }
 })();
