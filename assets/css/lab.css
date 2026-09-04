@@ -157,3 +157,96 @@
 @media (max-width: 576px) {
   .lab-layer { grid-template-columns: 1fr; gap: 0.3rem; }
 }
+
+/* ===== 사이버펑크 스킨 + 순환 구조 ===== */
+#lab-root {
+  --lab-line: rgb(34 224 255 / 25%);
+  --lab-card: #0d0d16;
+  --lab-accent: var(--neon-cyan, #22e0ff);
+}
+.lab-dashboard, .lab-panel {
+  border-radius: 4px;
+  box-shadow: inset 0 0 24px rgb(34 224 255 / 6%);
+}
+.lab-dashboard-title, .lab-panel-title {
+  font-family: var(--display-font, 'Orbitron', sans-serif);
+  letter-spacing: 0.5px;
+  text-shadow: 0 0 12px rgb(34 224 255 / 30%);
+}
+.lab-panel-note {
+  font-size: 0.8rem;
+  color: var(--text-muted-color, #889);
+  margin: 0 0 0.7rem;
+  border-left: 2px solid var(--neon-amber, #ffb020);
+  padding-left: 0.6rem;
+}
+.lab-chip {
+  background: #10101c;
+  font-family: var(--mono-font, monospace);
+}
+.lab-chip:hover {
+  border-color: var(--neon-cyan, #22e0ff);
+  color: var(--neon-cyan, #22e0ff);
+  box-shadow: 0 0 12px rgb(34 224 255 / 35%);
+}
+.lab-belt, .lab-box { background: #0a0a12; }
+.lab-belt.is-over, .lab-box.is-over {
+  box-shadow: inset 0 0 0 1px var(--neon-cyan, #22e0ff), 0 0 18px rgb(34 224 255 / 30%);
+}
+
+/* 되먹임(순환) 표시: 벨트 위로 되돌아가는 호 */
+.lab-belt {
+  position: relative;
+  transition: margin-top 0.2s;
+}
+.lab-belt.is-recurrent {
+  margin-top: 2rem;
+  border-color: var(--neon-magenta, #ff3bd4);
+  box-shadow: inset 0 0 0 1px rgb(255 59 212 / 45%);
+}
+.lab-belt.is-recurrent::before {
+  content: '';
+  position: absolute;
+  left: 8%; right: 8%;
+  top: -1.5rem;
+  height: 1.5rem;
+  border: 2px solid var(--neon-magenta, #ff3bd4);
+  border-bottom: 0;
+  border-radius: 12px 12px 0 0;
+  box-shadow: 0 0 14px rgb(255 59 212 / 45%);
+}
+.lab-belt.is-recurrent::after {
+  content: '↩ 되먹임 (t-1 → t)';
+  position: absolute;
+  top: -1.5rem;
+  left: 50%;
+  transform: translate(-50%, -70%);
+  font-family: var(--mono-font, monospace);
+  font-size: 0.62rem;
+  color: var(--neon-magenta, #ff3bd4);
+  background: var(--lab-card);
+  padding: 0 0.3rem;
+}
+
+.btn.is-on {
+  background: rgb(255 59 212 / 18%) !important;
+  border-color: var(--neon-magenta, #ff3bd4) !important;
+  color: #ffd7f4 !important;
+  box-shadow: 0 0 12px rgb(255 59 212 / 40%);
+}
+
+.lab-badge {
+  display: inline-block;
+  font-family: var(--mono-font, monospace);
+  font-size: 0.62rem;
+  padding: 0.05rem 0.4rem;
+  border: 1px solid var(--neon-magenta, #ff3bd4);
+  color: var(--neon-magenta, #ff3bd4);
+  border-radius: 3px;
+  vertical-align: middle;
+}
+.lab-badge.is-ff { border-color: var(--neon-cyan, #22e0ff); color: var(--neon-cyan, #22e0ff); }
+
+.lab-result.is-hit { color: var(--neon-cyan, #22e0ff); }
+.lab-result.is-hit a { text-shadow: 0 0 10px rgb(34 224 255 / 45%); }
+.lab-result.is-miss { color: var(--neon-magenta, #ff3bd4); }

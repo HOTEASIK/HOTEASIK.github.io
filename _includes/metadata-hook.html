@@ -1,0 +1,24 @@
+<!-- HOTEASIK · custom metadata hook (injected at end of <head> by Chirpy) -->
+
+<!-- 사이버펑크 디스플레이/모노 폰트 -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap"
+>
+
+<!-- 3단 사이드바 상태 즉시 복원 (깜빡임 방지) -->
+<script>
+  (function () {
+    try {
+      var s = localStorage.getItem('hoteasik-sb');
+      if (s === 'rail' || s === 'hidden' || s === 'expanded') {
+        document.documentElement.setAttribute('data-sb', s);
+      }
+    } catch (e) {}
+  })();
+</script>
+
+<!-- 3단 사이드바 토글 동작 (모든 페이지) -->
+<script defer src="{{ '/assets/js/sidebar-collapse.js' | relative_url }}"></script>

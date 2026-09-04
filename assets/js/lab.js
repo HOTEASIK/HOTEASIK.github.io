@@ -42,6 +42,7 @@
 
   // ---- 상태 (페이지 안에서만) ----
   var belt = [];   // 조합: 순서 있는 note id 배열
+  var beltLoop = false; // 조합: 끝 → 처음 되먹임(순환 구조) 여부
   var box = [];    // 합성: 순서 없는 note id 배열
 
   // ---- 유틸 ----
@@ -142,6 +143,9 @@
     var panel = el("section", "lab-panel lab-combine");
     panel.hidden = true;
     panel.appendChild(el("h3", "lab-panel-title", "⚙ 조합 — 층을 순서대로"));
+    panel.appendChild(el("p", "lab-panel-note",
+      "적층형은 그대로 벨트에 올리고, <strong>순환 신경망</strong>처럼 되먹임이 있는 구조는 " +
+      "<strong>↩ 되먹임</strong>을 켜서 끝을 처음으로 이어 주세요."));
 
     var belt$ = el("div", "lab-belt");
     belt$.appendChild(el("span", "lab-belt-cap", "입력 ⟶"));
@@ -153,11 +157,22 @@
 
     var actions = el("div", "lab-panel-actions");
     var build = el("button", "btn btn-primary btn-sm", "⚙ 제작");
+    var loop = el("button", "btn btn-outline-primary btn-sm", "↩ 되먹임: 꺼짐");
     var clear = el("button", "btn btn-outline-secondary btn-sm", "초기화");
-    build.type = clear.type = "button";
+    build.type = loop.type = clear.type = "button";
     build.addEventListener("click", runCombine);
-    clear.addEventListener("click", function () { belt = []; renderBelt(); result.innerHTML = ""; });
-    actions.appendChild(build); actions.appendChild(clear);
+    loop.addEventListener("click", function () {
+      beltLoop = !beltLoop;
+      loop.textContent = beltLoop ? "↩ 되먹임: 켜짐" : "↩ 되먹임: 꺼짐";
+      loop.classList.toggle("is-on", beltLoop);
+      renderBelt();
+    });
+    clear.addEventListener("click", function () {
+      belt = []; beltLoop = false;
+      loop.textContent = "↩ 되먹임: 꺼짐"; loop.classList.remove("is-on");
+      renderBelt(); result.innerHTML = "";
+    });
+    actions.appendChild(build); actions.appendChild(loop); actions.appendChild(clear);
     panel.appendChild(actions);
 
     var result = el("div", "lab-result");
@@ -178,32 +193,40 @@
         slots.appendChild(s);
       });
       if (!belt.length) slots.appendChild(el("span", "lab-empty", "부품을 여기로 드래그"));
+      belt$.classList.toggle("is-recurrent", beltLoop && belt.length > 0);
     }
   }
 
   function runCombine() {
     var panel = root.querySelector(".lab-combine");
     var out = panel._result;
-    var hit = recognizeCombine(belt);
+    var hit = recognizeCombine(belt, beltLoop);
     if (hit) {
       out.className = "lab-result is-hit";
-      out.innerHTML = '✨ <a href="' + esc(resultUrl(hit.post)) + '">' +
+      out.innerHTML = '✨ ' + (hit.recurrent ? '<span class="lab-badge">순환</span> ' : '<span class="lab-badge is-ff">적층</span> ') +
+        '<a href="' + esc(resultUrl(hit.post)) + '">' +
         esc(resultTitle(hit.post, hit.label)) + '</a> 완성!' +
         (hit.hint ? '<div class="lab-result-hint">' + esc(hit.hint) + '</div>' : "");
     } else {
       out.className = "lab-result is-miss";
-      out.textContent = "❌ 인식된 모델이 없습니다. 순서를 확인해 보세요.";
+      out.textContent = beltLoop
+        ? "❌ 이 되먹임 구조로 인식되는 모델이 없습니다. (순환 셀 + 완전연결이 필요할 수 있어요)"
+        : "❌ 인식된 모델이 없습니다. 순서를 확인하거나 ↩ 되먹임을 켜 보세요.";
     }
   }
 
-  function recognizeCombine(seq) {
+  // recurrent(되먹임) 여부가 레시피와 일치해야 인식.
+  //   레시피에 recurrent: true  → 벨트 되먹임이 켜져 있을 때만
+  //   레시피에 recurrent 없음/false → 되먹임이 꺼져 있을 때만
+  function recognizeCombine(seq, recurrent) {
     if (!seq.length) return null;
+    recurrent = !!recurrent;
     var exact = RECIPES.find(function (r) {
-      return Array.isArray(r.sequence) && arrEq(r.sequence, seq);
+      return !!r.recurrent === recurrent && Array.isArray(r.sequence) && arrEq(r.sequence, seq);
     });
     if (exact) return exact;
     return RECIPES.find(function (r) {
-      return Array.isArray(r.loose) && looseMatch(r.loose, seq);
+      return !!r.recurrent === recurrent && Array.isArray(r.loose) && looseMatch(r.loose, seq);
     }) || null;
   }
 

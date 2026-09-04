@@ -1,0 +1,116 @@
+---
+layout: default
+---
+
+{% include lang.html %}
+
+{%- assign recent = site.posts | slice: 0, 6 -%}
+{%- assign n_posts = site.posts | size -%}
+{%- assign n_cats = site.categories | size -%}
+{%- assign n_tags = site.tags | size -%}
+{%- assign n_models = site.posts | where: 'layer', 'model' | size -%}
+
+<link rel="stylesheet" href="{{ '/assets/css/factory.css' | relative_url }}">
+
+<div id="factory" class="factory" aria-label="HOTEASIK 공장 지도">
+  <div class="factory-sky" aria-hidden="true">
+    <div class="moon"></div>
+    <div class="stars"></div>
+    <div class="skyline"></div>
+    <div class="haze haze-cyan"></div>
+    <div class="haze haze-magenta"></div>
+  </div>
+
+  <header class="factory-intro">
+    <h1 class="factory-title" data-text="HOTEASIK">HOTEASIK</h1>
+    <p class="factory-tagline">{{ site.tagline }}</p>
+    <p class="factory-hint"><i class="fas fa-hand-pointer"></i> 건물을 클릭해 각 구역으로 들어가세요</p>
+  </header>
+
+  <div class="factory-scene" id="factory-scene">
+
+    <!-- 블로그 건물 -->
+    <a class="bldg bldg-blog" href="{{ '/blog/' | relative_url }}" data-plate="블로그 · 조립 기록">
+      <span class="chimney"><i class="smoke"></i><i class="smoke"></i><i class="smoke"></i></span>
+      <span class="bldg-body">
+        <span class="bldg-sign">BLOG</span>
+        <span class="bldg-windows w-blog"></span>
+        <span class="ticker">
+          <span class="ticker-track">
+            {% for post in recent %}<span class="tick">▸ {{ post.title }}</span>{% endfor %}
+            {% for post in recent %}<span class="tick">▸ {{ post.title }}</span>{% endfor %}
+          </span>
+        </span>
+      </span>
+      <span class="bldg-count">{{ n_posts }}<small>글</small></span>
+    </a>
+
+    <!-- 랩 건물 -->
+    <a class="bldg bldg-lab" href="{{ '/lab/' | relative_url }}" data-plate="랩 · 조합 &amp; 합성 작업대">
+      <span class="bldg-rooflight"></span>
+      <span class="bldg-body">
+        <span class="bldg-sign neon-magenta">LAB</span>
+        <span class="assembly">
+          <i class="part p1"></i><i class="part p2"></i><i class="part p3"></i><i class="belt"></i>
+        </span>
+        <span class="bldg-windows w-lab"></span>
+      </span>
+      <span class="bldg-count">{{ n_models }}<small>모델</small></span>
+    </a>
+
+    <!-- 자료고 : 아카이브 / 카테고리 / 태그 -->
+    <div class="bldg bldg-archive" data-plate="자료고 · 아카이브 / 카테고리 / 태그">
+      <span class="bldg-body">
+        <span class="bldg-sign neon-amber">ARCHIVE</span>
+        <span class="silo-row">
+          <a class="silo" href="{{ '/archives/' | relative_url }}">
+            <i class="fas fa-boxes-stacked"></i><span>아카이브</span>
+          </a>
+          <a class="silo" href="{{ '/categories/' | relative_url }}">
+            <i class="fas fa-sitemap"></i><span>카테고리 <b>{{ n_cats }}</b></span>
+          </a>
+          <a class="silo" href="{{ '/tags/' | relative_url }}">
+            <i class="fas fa-tags"></i><span>태그 <b>{{ n_tags }}</b></span>
+          </a>
+        </span>
+      </span>
+    </div>
+
+    <!-- 관제탑 = 검색 -->
+    <button class="bldg bldg-tower" id="factory-search" type="button" data-plate="관제탑 · 검색">
+      <span class="tower-mast"><i class="radar"></i></span>
+      <span class="tower-body"><i class="fas fa-magnifying-glass"></i></span>
+    </button>
+
+    <!-- 사무동 = 소개 -->
+    <a class="bldg bldg-office" href="{{ '/about/' | relative_url }}" data-plate="사무동 · 소개">
+      <span class="bldg-body">
+        <span class="bldg-windows w-office"></span>
+        <span class="office-door"><i class="fas fa-circle-info"></i></span>
+      </span>
+    </a>
+
+    <div class="ground" aria-hidden="true"><span class="ground-grid"></span></div>
+  </div>
+
+  <div class="factory-plate" id="factory-plate" hidden></div>
+
+  <!-- 접근성 / 노스크립트 / 모바일 폴백: 최근 글 -->
+  <section class="factory-recent">
+    <h2>최근 조립 기록</h2>
+    <ul class="factory-recent-list">
+      {% for post in recent %}
+        <li>
+          <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+          <span class="meta">
+            {% include datetime.html date=post.date lang=lang %}
+            {% if post.categories.size > 0 %} · {{ post.categories | join: ' / ' }}{% endif %}
+          </span>
+        </li>
+      {% endfor %}
+    </ul>
+    <a class="btn btn-outline-primary btn-sm" href="{{ '/blog/' | relative_url }}">전체 글 보기 →</a>
+  </section>
+</div>
+
+<script defer src="{{ '/assets/js/factory.js' | relative_url }}"></script>

@@ -7,7 +7,7 @@ timezone: Asia/Seoul
 
 # ── jekyll-seo-tag ───────────────────────────────
 title: HOTEASIK
-tagline: 개념을 조립하고 합성하는 학습 공장
+tagline: 네온 불빛 아래 신경망을 조립하는 공장
 description: >-
   신경망의 층과 개념을 부품처럼 조립(조합)하고 합성해서
   더 큰 모델·개념을 만들어 보는 학습 블로그.
@@ -44,14 +44,14 @@ analytics:
 pageviews:
   provider:
 
-# 빈 값 = 시스템 설정 따름 + 사이드바 토글 표시
-theme_mode:
+# 사이버펑크 스킨은 다크 고정
+theme_mode: dark
 
 cdn:
 
-avatar:
+avatar: /assets/img/logo.png
 
-social_preview_image:
+social_preview_image: /assets/img/favicons/web-app-manifest-512x512.png
 
 toc: true
 

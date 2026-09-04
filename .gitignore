@@ -27,3 +27,8 @@ assets/js/dist
 *~
 .DS_Store
 Thumbs.db
+
+# 로컬 재료/스크래치
+재료/
+개선점.md
+/tmp/

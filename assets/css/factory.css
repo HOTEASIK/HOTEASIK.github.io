@@ -1,0 +1,460 @@
+/* ===== HOTEASIK · 팩토리 맵 랜딩 ===== */
+
+.factory {
+  --c: var(--neon-cyan, #22e0ff);
+  --m: var(--neon-magenta, #ff3bd4);
+  --a: var(--neon-amber, #ffb020);
+  --px: 0; --py: 0;
+  position: relative;
+  margin: -0.5rem 0 1rem;
+  overflow: hidden;
+  padding: 0 0 0.5rem;
+}
+
+/* ---------- 인트로 ---------- */
+.factory-intro { text-align: center; padding: 0.5rem 0 1.25rem; position: relative; z-index: 3; }
+
+.factory-title {
+  font-family: var(--display-font, 'Orbitron', sans-serif);
+  font-weight: 900;
+  font-size: clamp(2.2rem, 8vw, 3.6rem);
+  letter-spacing: 3px;
+  margin: 0;
+  color: #eafcff;
+  position: relative;
+  text-shadow: 0 0 24px rgb(34 224 255 / 45%);
+}
+.factory-title::before,
+.factory-title::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  clip-path: inset(0 0 0 0);
+}
+.factory-title::before { color: var(--m); animation: glitch-x 4s infinite steps(2); opacity: 0.7; }
+.factory-title::after  { color: var(--c); animation: glitch-y 5.5s infinite steps(2); opacity: 0.6; }
+
+@keyframes glitch-x { 0%,92%,100% { transform: translate(0,0); } 93% { transform: translate(-3px,1px); } 96% { transform: translate(2px,-1px); } }
+@keyframes glitch-y { 0%,90%,100% { transform: translate(0,0); } 91% { transform: translate(2px,-2px); } 95% { transform: translate(-2px,2px); } }
+
+.factory-tagline {
+  font-family: var(--mono-font, monospace);
+  color: var(--c);
+  margin: 0.4rem 0 0.2rem;
+  font-size: 0.9rem;
+}
+.factory-hint { color: var(--text-muted-color, #888); font-size: 0.8rem; margin: 0.35rem 0 0; }
+.factory-hint i { color: var(--a); }
+
+/* ---------- 하늘 ---------- */
+.factory-sky {
+  position: absolute;
+  inset: -1rem -2rem auto -2rem;
+  height: 30rem;
+  overflow: hidden;
+  z-index: 0;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #05060d 0%, #0a0b1a 45%, #0c0a16 100%);
+}
+.moon {
+  position: absolute;
+  top: 2.2rem; right: 12%;
+  width: 4.2rem; height: 4.2rem;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 38%, #dffaff, #7fd7e6 55%, #2a6b7a);
+  box-shadow: 0 0 50px rgb(127 215 230 / 55%), 0 0 120px rgb(34 224 255 / 25%);
+  transform: translate(calc(var(--px) * -6px), calc(var(--py) * -4px));
+}
+.stars {
+  position: absolute; inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 12% 22%, #fff, transparent),
+    radial-gradient(1px 1px at 28% 12%, #cfefff, transparent),
+    radial-gradient(1px 1px at 48% 30%, #fff, transparent),
+    radial-gradient(1px 1px at 67% 16%, #bfeaff, transparent),
+    radial-gradient(1px 1px at 82% 34%, #fff, transparent),
+    radial-gradient(1px 1px at 91% 8%, #cfefff, transparent),
+    radial-gradient(1px 1px at 8% 42%, #fff, transparent),
+    radial-gradient(1px 1px at 38% 46%, #bfeaff, transparent);
+  animation: twinkle 4s ease-in-out infinite alternate;
+  transform: translate(calc(var(--px) * -3px), calc(var(--py) * -2px));
+}
+@keyframes twinkle { from { opacity: 0.5; } to { opacity: 1; } }
+
+.skyline {
+  position: absolute;
+  left: -5%; right: -5%; bottom: 6.5rem;
+  height: 7rem;
+  background:
+    linear-gradient(180deg, transparent, rgb(20 12 30 / 0.9)),
+    repeating-linear-gradient(90deg,
+      #0e1022 0 22px, #0b0c1c 22px 30px, #12132a 30px 52px, #0a0b18 52px 60px);
+  -webkit-mask: repeating-linear-gradient(90deg,
+    #000 0 18px, transparent 18px 20px, #000 20px 46px, transparent 46px 50px, #000 50px 72px);
+  opacity: 0.7;
+  transform: translate(calc(var(--px) * -8px), 0);
+}
+.haze {
+  position: absolute;
+  width: 22rem; height: 12rem;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.4;
+}
+.haze-cyan { left: -4rem; bottom: 2rem; background: var(--c); animation: drift 18s ease-in-out infinite alternate; }
+.haze-magenta { right: -4rem; bottom: 4rem; background: var(--m); animation: drift 22s ease-in-out infinite alternate-reverse; }
+@keyframes drift { from { transform: translateX(0); } to { transform: translateX(3rem); } }
+
+/* ---------- 무대 ---------- */
+.factory-scene {
+  position: relative;
+  z-index: 2;
+  min-height: 22rem;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: clamp(0.4rem, 2vw, 1.4rem);
+  padding: 3rem 0.5rem 0;
+}
+
+.ground {
+  position: absolute;
+  left: -2rem; right: -2rem; bottom: 0;
+  height: 5.5rem;
+  background: linear-gradient(180deg, #0c0d1a, #060710);
+  border-top: 1px solid rgb(34 224 255 / 35%);
+  box-shadow: 0 -6px 30px -8px rgb(34 224 255 / 30%);
+  overflow: hidden;
+}
+.ground-grid {
+  position: absolute; inset: 0 0 -60% 0;
+  background-image:
+    linear-gradient(rgb(34 224 255 / 22%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(34 224 255 / 18%) 1px, transparent 1px);
+  background-size: 2.2rem 2.2rem;
+  transform: perspective(240px) rotateX(62deg);
+  transform-origin: top center;
+  animation: grid-run 6s linear infinite;
+}
+@keyframes grid-run { from { background-position: 0 0; } to { background-position: 0 2.2rem; } }
+
+/* ---------- 건물 공통 ---------- */
+.bldg {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  text-decoration: none;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  transform: translateY(0) translate(calc(var(--px) * var(--depth, 2px)), 0);
+  transition: transform 0.25s ease, filter 0.25s ease;
+  z-index: 2;
+}
+.bldg:hover, .bldg:focus-visible { transform: translateY(-8px); outline: none; filter: brightness(1.15); }
+
+.bldg-body {
+  position: relative;
+  width: var(--w, 7rem);
+  height: var(--h, 11rem);
+  display: block;
+  background:
+    linear-gradient(180deg, #14162a, #0b0c18);
+  border: 1px solid rgb(34 224 255 / 30%);
+  border-bottom: 0;
+  box-shadow:
+    inset 0 0 30px rgb(0 0 0 / 60%),
+    0 0 0 1px rgb(0 0 0 / 40%);
+  clip-path: polygon(0 8%, 12% 0, 88% 0, 100% 8%, 100% 100%, 0 100%);
+}
+.bldg:hover .bldg-body,
+.bldg:focus-visible .bldg-body {
+  border-color: var(--c);
+  box-shadow: inset 0 0 30px rgb(0 0 0 / 40%), 0 0 28px rgb(34 224 255 / 45%);
+}
+
+.bldg-sign {
+  position: absolute;
+  top: 0.9rem; left: 0; right: 0;
+  text-align: center;
+  font-family: var(--display-font, 'Orbitron', sans-serif);
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 2px;
+  color: #eafcff;
+  text-shadow: 0 0 6px var(--c), 0 0 16px var(--c);
+  animation: flicker 5s infinite;
+}
+.bldg-sign.neon-magenta { text-shadow: 0 0 6px var(--m), 0 0 16px var(--m); }
+.bldg-sign.neon-amber { text-shadow: 0 0 6px var(--a), 0 0 16px var(--a); }
+.bldg:hover .bldg-sign { animation: none; text-shadow: 0 0 8px var(--c), 0 0 22px var(--c), 0 0 40px var(--c); }
+@keyframes flicker {
+  0%,19%,21%,23%,80%,100% { opacity: 1; }
+  20%,22% { opacity: 0.35; }
+  81% { opacity: 0.6; }
+}
+
+.bldg-windows {
+  position: absolute;
+  left: 0.7rem; right: 0.7rem; bottom: 0.7rem; top: 2.8rem;
+  background-image:
+    linear-gradient(rgb(34 224 255 / 0) 0, rgb(34 224 255 / 0) 100%),
+    repeating-linear-gradient(90deg, rgb(34 224 255 / 55%) 0 8px, transparent 8px 16px),
+    repeating-linear-gradient(0deg, rgb(34 224 255 / 55%) 0 8px, transparent 8px 18px);
+  background-blend-mode: normal;
+  opacity: 0.5;
+  mix-blend-mode: screen;
+  filter: drop-shadow(0 0 4px rgb(34 224 255 / 60%));
+  animation: win-flicker 7s steps(1) infinite;
+}
+.w-lab { background-image:
+  repeating-linear-gradient(90deg, rgb(255 59 212 / 55%) 0 8px, transparent 8px 16px),
+  repeating-linear-gradient(0deg, rgb(255 59 212 / 55%) 0 8px, transparent 8px 18px);
+  filter: drop-shadow(0 0 4px rgb(255 59 212 / 60%)); }
+.w-office { background-image:
+  repeating-linear-gradient(90deg, rgb(255 176 32 / 55%) 0 7px, transparent 7px 14px),
+  repeating-linear-gradient(0deg, rgb(255 176 32 / 55%) 0 7px, transparent 7px 15px);
+  filter: drop-shadow(0 0 4px rgb(255 176 32 / 55%)); }
+@keyframes win-flicker { 0%,100% { opacity: 0.5; } 50% { opacity: 0.65; } 73% { opacity: 0.4; } }
+
+.bldg-count {
+  margin-top: 0.5rem;
+  font-family: var(--mono-font, monospace);
+  font-size: 1rem;
+  color: var(--c);
+  text-shadow: 0 0 10px rgb(34 224 255 / 50%);
+}
+.bldg-count small { font-size: 0.65rem; color: var(--text-muted-color, #889); margin-left: 2px; }
+
+/* ---------- 블로그 건물 ---------- */
+.bldg-blog { --w: 9rem; --h: 13.5rem; --depth: 3px; }
+.bldg-blog .bldg-body { width: var(--w); height: var(--h); }
+.chimney {
+  position: absolute;
+  top: -1.6rem; right: 1.1rem;
+  width: 1.1rem; height: 2.2rem;
+  background: linear-gradient(180deg, #1a1c30, #0c0d18);
+  border: 1px solid rgb(34 224 255 / 25%);
+  z-index: 1;
+}
+.chimney .smoke {
+  position: absolute;
+  left: 50%; top: -0.3rem;
+  width: 0.7rem; height: 0.7rem;
+  margin-left: -0.35rem;
+  border-radius: 50%;
+  background: rgb(34 224 255 / 35%);
+  filter: blur(3px);
+  animation: smoke 3s linear infinite;
+}
+.chimney .smoke:nth-child(2) { animation-delay: 1s; }
+.chimney .smoke:nth-child(3) { animation-delay: 2s; }
+@keyframes smoke {
+  0% { transform: translateY(0) scale(0.5); opacity: 0; }
+  20% { opacity: 0.7; }
+  100% { transform: translateY(-3.5rem) scale(1.8); opacity: 0; }
+}
+.ticker {
+  position: absolute;
+  left: 0.4rem; right: 0.4rem; bottom: 0.5rem;
+  height: 1.1rem;
+  overflow: hidden;
+  background: rgb(0 0 0 / 55%);
+  border: 1px solid rgb(34 224 255 / 30%);
+}
+.ticker-track {
+  display: inline-flex;
+  gap: 1.4rem;
+  white-space: nowrap;
+  padding-left: 100%;
+  animation: ticker 22s linear infinite;
+}
+.bldg-blog:hover .ticker-track { animation-play-state: paused; }
+.tick { font-family: var(--mono-font, monospace); font-size: 0.62rem; color: var(--c); }
+@keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+/* ---------- 랩 건물 ---------- */
+.bldg-lab { --w: 8rem; --h: 10.5rem; --depth: 2px; }
+.bldg-lab .bldg-body { width: var(--w); height: var(--h); border-color: rgb(255 59 212 / 30%); }
+.bldg-lab:hover .bldg-body { border-color: var(--m); box-shadow: inset 0 0 30px rgb(0 0 0 / 40%), 0 0 28px rgb(255 59 212 / 45%); }
+.bldg-rooflight {
+  position: absolute;
+  top: -0.5rem; left: 50%; width: 60%; height: 0.5rem;
+  transform: translateX(-50%);
+  background: var(--m);
+  filter: blur(4px);
+  animation: pulse 2.2s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
+.assembly {
+  position: absolute;
+  left: 0.6rem; right: 0.6rem; top: 3rem;
+  height: 1.4rem;
+}
+.assembly .belt {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  height: 3px; background: repeating-linear-gradient(90deg, #444 0 6px, #222 6px 12px);
+}
+.assembly .part {
+  position: absolute; bottom: 3px;
+  width: 0.5rem; height: 0.5rem;
+  background: var(--c);
+  box-shadow: 0 0 8px var(--c);
+  animation: convey 3s linear infinite;
+}
+.assembly .p2 { animation-delay: 1s; background: var(--m); box-shadow: 0 0 8px var(--m); }
+.assembly .p3 { animation-delay: 2s; background: var(--a); box-shadow: 0 0 8px var(--a); }
+@keyframes convey { from { left: -10%; } to { left: 110%; } }
+
+/* ---------- 자료고 ---------- */
+.bldg-archive { --w: 10rem; --h: 8.5rem; --depth: 1px; }
+.bldg-archive .bldg-body { width: var(--w); height: var(--h); border-color: rgb(255 176 32 / 30%); }
+.bldg-archive:hover .bldg-body { border-color: var(--a); box-shadow: inset 0 0 30px rgb(0 0 0 / 40%), 0 0 26px rgb(255 176 32 / 40%); }
+.silo-row {
+  position: absolute;
+  left: 0.4rem; right: 0.4rem; bottom: 0.5rem; top: 2.6rem;
+  display: flex; gap: 0.3rem;
+}
+.silo {
+  flex: 1;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 0.2rem;
+  border: 1px solid rgb(255 176 32 / 35%);
+  background: rgb(255 176 32 / 6%);
+  color: #eafcff;
+  text-decoration: none;
+  font-size: 0.55rem;
+  text-align: center;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+.silo i { color: var(--a); font-size: 0.9rem; }
+.silo b { color: var(--a); }
+.silo:hover { background: rgb(255 176 32 / 18%); box-shadow: 0 0 14px rgb(255 176 32 / 40%); }
+
+/* ---------- 관제탑(검색) ---------- */
+.bldg-tower { --depth: 4px; align-self: flex-end; }
+.tower-mast {
+  position: relative;
+  width: 0.5rem; height: 5rem;
+  background: linear-gradient(180deg, #1a1c30, #0c0d18);
+  border: 1px solid rgb(34 224 255 / 30%);
+}
+.tower-mast .radar {
+  position: absolute;
+  top: -0.9rem; left: 50%;
+  width: 1.8rem; height: 1.8rem;
+  margin-left: -0.9rem;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, var(--c), transparent 55%);
+  filter: drop-shadow(0 0 6px var(--c));
+  animation: spin 2.4s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.tower-body {
+  width: 3.2rem; height: 2.6rem;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(180deg, #14162a, #0b0c18);
+  border: 1px solid rgb(34 224 255 / 30%);
+  border-bottom: 0;
+  color: var(--c);
+}
+.bldg-tower:hover .tower-body { border-color: var(--c); box-shadow: 0 0 22px rgb(34 224 255 / 45%); }
+
+/* ---------- 사무동 ---------- */
+.bldg-office { --w: 5rem; --h: 6rem; --depth: 1px; }
+.bldg-office .bldg-body { width: var(--w); height: var(--h); border-color: rgb(255 176 32 / 30%); }
+.office-door {
+  position: absolute;
+  left: 50%; bottom: 0; width: 1.4rem; height: 1.8rem;
+  margin-left: -0.7rem;
+  background: rgb(255 176 32 / 12%);
+  border: 1px solid rgb(255 176 32 / 40%);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--a);
+  font-size: 0.7rem;
+}
+
+/* ---------- 명판 ---------- */
+.factory-plate {
+  position: absolute;
+  z-index: 6;
+  pointer-events: none;
+  padding: 0.3rem 0.7rem;
+  font-family: var(--mono-font, monospace);
+  font-size: 0.72rem;
+  color: #eafcff;
+  background: rgb(6 8 14 / 92%);
+  border: 1px solid var(--c);
+  box-shadow: 0 0 16px rgb(34 224 255 / 40%);
+  transform: translate(-50%, -120%);
+  white-space: nowrap;
+}
+
+/* ---------- 최근 글 ---------- */
+.factory-recent {
+  position: relative;
+  z-index: 3;
+  margin-top: 1.5rem;
+  border: 1px solid var(--card-border-color, #20203a);
+  border-left: 2px solid var(--c);
+  background: var(--panel-bg, #0d0d16);
+  padding: 1rem 1.1rem 1.2rem;
+}
+.factory-recent h2 {
+  margin: 0 0 0.7rem;
+  font-size: 1rem;
+  letter-spacing: 1px;
+  color: #eafcff;
+}
+.factory-recent-list { list-style: none; padding: 0; margin: 0 0 0.9rem; }
+.factory-recent-list li { padding: 0.45rem 0; border-top: 1px dashed var(--card-border-color, #20203a); }
+.factory-recent-list li:first-child { border-top: 0; }
+.factory-recent-list a { font-weight: 600; }
+.factory-recent-list .meta { display: block; font-size: 0.72rem; color: var(--text-muted-color, #889); font-family: var(--mono-font, monospace); }
+
+/* ---------- 반응형: 좁으면 카드 그리드 ---------- */
+@media (max-width: 819px) {
+  .factory-sky { height: 16rem; }
+  .skyline, .moon { display: none; }
+  .factory-scene {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+    min-height: 0;
+    padding: 1rem 0 0;
+  }
+  .ground { display: none; }
+  .bldg { transform: none !important; }
+  .bldg-body,
+  .bldg-blog .bldg-body,
+  .bldg-lab .bldg-body,
+  .bldg-archive .bldg-body,
+  .bldg-office .bldg-body {
+    width: 100%;
+    height: 7.5rem;
+    clip-path: none;
+    border: 1px solid rgb(34 224 255 / 30%);
+    border-radius: 4px;
+  }
+  .bldg-blog { grid-column: 1 / -1; }
+  .bldg-blog .bldg-body { height: 8.5rem; }
+  .chimney, .bldg-rooflight { display: none; }
+  .bldg-tower { flex-direction: row; gap: 0.5rem; align-items: center;
+    border: 1px solid rgb(34 224 255 / 30%); border-radius: 4px; padding: 0.8rem; }
+  .tower-mast { height: 2.5rem; }
+  .tower-body { border: 0; width: auto; height: auto; }
+  .bldg-count { position: absolute; top: 0.4rem; right: 0.6rem; margin: 0; font-size: 0.8rem; }
+}
+
+/* ---------- 모션 최소화 ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .factory-title::before, .factory-title::after,
+  .stars, .haze, .ground-grid, .chimney .smoke,
+  .bldg-sign, .assembly .part, .tower-mast .radar,
+  .ticker-track, .bldg-rooflight { animation: none !important; }
+  .factory-title::before, .factory-title::after { display: none; }
+}

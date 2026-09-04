@@ -1,7 +1,9 @@
 # 조합 레시피 — 층별 부품을 순서대로 벨트에 올려 모델을 만든다.
-#   sequence: 글 slug 를 정확한 순서로 (정확 일치)
-#   loose:    이 항목들(slug 또는 kind)이 이 순서로 한 번씩 등장하면 인식 (사이 다른 부품 허용)
-#   post:     완성 시 이동할 글 slug
+#   sequence:  글 slug 를 정확한 순서로 (정확 일치)
+#   loose:     이 항목들(slug 또는 kind)이 이 순서로 한 번씩 등장하면 인식 (사이 다른 부품 허용)
+#   post:      완성 시 이동할 글 slug
+#   recurrent: true 면 벨트의 "↩ 되먹임"이 켜져 있어야 인식 (순환 구조).
+#              생략/false 면 되먹임이 꺼진 적층형에서만 인식.
 
 - id: lenet-5
   label: LeNet-5
@@ -34,7 +36,22 @@
   hint: 입력 → 합성곱 → 풀링(종류무관) → 완전연결 순이면 인식
 
 - id: rnn
-  label: RNN (일반형)
+  label: RNN (되먹임 라인)
   loose: [input, recurrent, fc]
+  recurrent: true
   post: rnn-net
-  hint: 입력 → 순환 → 완전연결 순이면 인식
+  hint: 입력 → 순환 셀(RNN/LSTM) → 완전연결 + ↩ 되먹임 ON
+
+- id: deep-rnn
+  label: 다층 RNN
+  loose: [input, recurrent, recurrent, fc]
+  recurrent: true
+  post: rnn-net
+  hint: 순환 셀을 두 층 쌓고 되먹임을 걸면 다층 순환망
+
+- id: lstm-net
+  label: LSTM 시퀀스 모델
+  loose: [input, lstm, fc]
+  recurrent: true
+  post: lstm
+  hint: 입력 → LSTM → 완전연결 + ↩ 되먹임 ON (게이트가 달린 순환 라인)
