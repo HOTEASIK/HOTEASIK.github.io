@@ -9,6 +9,7 @@ layout: default
 {%- assign n_cats = site.categories | size -%}
 {%- assign n_tags = site.tags | size -%}
 {%- assign n_models = site.posts | where: 'layer', 'model' | size -%}
+{%- assign n_prep = site.posts | where: 'layer', 'preprocess' | size -%}
 
 <link rel="stylesheet" href="{{ '/assets/css/factory.css' | relative_url }}">
 
@@ -76,11 +77,17 @@ layout: default
       </span>
     </div>
 
-    <!-- 관제탑 = 검색 -->
-    <button class="bldg bldg-tower" id="factory-search" type="button" data-plate="관제탑 · 검색">
-      <span class="tower-mast"><i class="radar"></i></span>
-      <span class="tower-body"><i class="fas fa-magnifying-glass"></i></span>
-    </button>
+    <!-- 전처리동 = 데이터 전처리 -->
+    <a class="bldg bldg-prep" href="{{ '/categories/전처리층/' | relative_url }}" data-plate="전처리동 · 데이터 전처리">
+      <span class="bldg-body">
+        <span class="bldg-sign">PREP</span>
+        <span class="assembly">
+          <i class="part p1"></i><i class="part p2"></i><i class="part p3"></i><i class="belt"></i>
+        </span>
+        <span class="bldg-windows w-prep"></span>
+      </span>
+      <span class="bldg-count">{{ n_prep }}<small>단계</small></span>
+    </a>
 
     <!-- 사무동 = 소개 -->
     <a class="bldg bldg-office" href="{{ '/about/' | relative_url }}" data-plate="사무동 · 소개">

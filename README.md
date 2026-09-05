@@ -4,7 +4,7 @@
 [cotes2020/jekyll-theme-chirpy](https://github.com/cotes2020/jekyll-theme-chirpy) (`~> 7.6`) 기반 + 사이버펑크 스킨.
 
 - **홈** = 인터랙티브 공장 지도. 건물 하나 = 기능 하나
-  (블로그 · 랩 · 자료고[아카이브/카테고리/태그] · 관제탑[검색] · 사무동[소개]).
+  (블로그 · 랩 · 자료고[아카이브/카테고리/태그] · 전처리동[데이터 전처리] · 사무동[소개]).
 - **사이드바 3단 접기**: 펼침 → 아이콘 레일 → 완전 숨김 (`Ctrl+\`, 상태 저장).
 - 부품·개념·모델은 **모두 각각 하나의 글**(`_posts/*.md`). `frontmatter` 의
   `layer` / `kind` 로 성격을 표시한다.
@@ -26,14 +26,17 @@ _layouts/home.html             ★ 인터랙티브 공장 지도 (Chirpy home �
 _layouts/lab.html              랩 레이아웃 — 노트/레시피를 JSON 으로 심어 lab.js 에 전달
 _tabs/{lab,blog,about}.md      조합&합성 / 전체 글 목록 / 소개
 
-_includes/metadata-hook.html   ★ 헤드 확장점 — 네온 폰트 + 사이드바 JS 로드
+_includes/metadata-hook.html   ★ 헤드 확장점 — 네온 폰트 + 사이드바 JS + 데이터 전/후 위젯 로드
 _includes/sidebar.html         ★ Chirpy 사이드바 + 3단 토글/재열기 버튼
+_includes/data-demo.html       데이터 전처리 글 전용: 처리 전/후 시각 비교 위젯
 assets/css/jekyll-theme-chirpy.scss  ★ 사이버펑크 스킨 (Chirpy 다크 CSS 변수 오버라이드)
 assets/css/factory.css         공장 지도 스타일
 assets/css/lab.css             랩 스타일
 assets/js/sidebar-collapse.js  3단 사이드바 동작
-assets/js/factory.js           공장 지도 인터랙션 (패럴랙스·명판·검색연동)
+assets/js/factory.js           공장 지도 인터랙션 (패럴랙스·명판)
 assets/js/lab.js               조합·합성 엔진 (vanilla, 의존성 없음)
+assets/css/data-demo.css       데이터 전/후 위젯 스타일
+assets/js/data-demo.js         데이터 전/후 위젯 토글 (vanilla)
 
 assets/img/logo.png            네온 가공한 호박벌 로고 (avatar)
 assets/img/favicons/*          파비콘 세트
@@ -60,7 +63,7 @@ title: 레이어 정규화
 date: 2026-09-10 10:00:00 +0900
 categories: [부품, 은닉층]
 tags: [norm]
-layer: hidden          # input | hidden | output | training | eval | concept | model
+layer: hidden          # input | hidden | output | training | eval | concept | model | preprocess
 kind: norm             # 세부: activation, conv, recurrent, pooling, dense, loss, norm,
                        #   attention, optimizer, regularization,
                        #   classification, regression, detection, generation, ranking …
@@ -74,6 +77,9 @@ weight: 1              # 대시보드 비중 (은닉층 핵심은 2)
 ```
 
 - `slug` = 파일명에서 날짜를 뗀 부분. `[[slug]]` 와 레시피가 이 값으로 서로를 참조한다.
+- `layer: preprocess` 글(데이터 전처리)은 본문에 `{% include data-demo.html type="missing-value" %}`
+  처럼 넣으면 처리 전/후를 비교하는 위젯이 뜬다. `type` 은 `missing-value` / `feature-scaling` /
+  `augmentation` / `split` 중 하나 (새 종류 추가 시 `_includes/data-demo.html` 의 `case` 문에 보태면 됨).
 - 모델(LeNet-5, VLA 등)은 `layer: model`, `categories: [모델]`, 보통 `combinable`/`synthesizable` 없음.
 
 ## 조합 레시피 (`_data/recipes.yml`)

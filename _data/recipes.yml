@@ -5,6 +5,12 @@
 #   recurrent: true 면 벨트의 "↩ 되먹임"이 켜져 있어야 인식 (순환 구조).
 #              생략/false 면 되먹임이 꺼진 적층형에서만 인식.
 
+- id: data-pipeline
+  label: 데이터 전처리 파이프라인
+  sequence: [missing-value, feature-scaling, augmentation, split]
+  post: data-pipeline
+  hint: 결측치 처리 → 스케일링 → 증강 → 분할 순서로 벨트에 올리면 완성
+
 - id: lenet-5
   label: LeNet-5
   sequence: [input, conv, avgpool, conv, avgpool, fc, fc, softmax-out]

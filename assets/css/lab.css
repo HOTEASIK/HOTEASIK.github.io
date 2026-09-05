@@ -123,6 +123,7 @@
 .lab-chip-dot[data-layer="eval"] { background: #14b8a6; }
 .lab-chip-dot[data-layer="concept"] { background: #ef4444; }
 .lab-chip-dot[data-layer="model"] { background: #64748b; }
+.lab-chip-dot[data-layer="preprocess"] { background: #f472b6; }
 
 /* ---- 토글 (맨 위) ---- */
 .lab-toggles { display: flex; gap: 0.5rem; margin: 0 0 0.9rem; flex-wrap: wrap; }
@@ -402,6 +403,7 @@ body[sidebar-display] .lab-dock .lab-panel { display: none; }
 .lab-board-col[data-layer="eval"]     { --col: #14b8a6; }
 .lab-board-col[data-layer="concept"]  { --col: #ef4444; }
 .lab-board-col[data-layer="model"]    { --col: #64748b; }
+.lab-board-col[data-layer="preprocess"] { --col: #f472b6; }
 
 .lab-board-col-head {
   border-bottom-color: color-mix(in srgb, var(--col) 55%, transparent);

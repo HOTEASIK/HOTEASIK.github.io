@@ -50,20 +50,4 @@
     b.addEventListener('focus', function () { showPlate(b); });
     b.addEventListener('blur', hidePlate);
   });
-
-  /* ---------- 관제탑 = 검색 ---------- */
-  var searchBldg = document.getElementById('factory-search');
-  if (searchBldg) {
-    searchBldg.addEventListener('click', function () {
-      var input = document.getElementById('search-input');
-      var trigger = document.getElementById('search-trigger');
-      if (trigger && getComputedStyle(trigger).display !== 'none') {
-        trigger.click();
-      }
-      setTimeout(function () {
-        var i = document.getElementById('search-input') || input;
-        if (i) { i.focus(); i.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
-      }, 60);
-    });
-  }
 })();

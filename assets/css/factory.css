@@ -335,34 +335,15 @@
 .silo b { color: var(--a); }
 .silo:hover { background: rgb(255 176 32 / 18%); box-shadow: 0 0 14px rgb(255 176 32 / 40%); }
 
-/* ---------- 관제탑(검색) ---------- */
-.bldg-tower { --depth: 4px; align-self: flex-end; }
-.tower-mast {
-  position: relative;
-  width: 0.5rem; height: 5rem;
-  background: linear-gradient(180deg, #1a1c30, #0c0d18);
-  border: 1px solid rgb(34 224 255 / 30%);
-}
-.tower-mast .radar {
-  position: absolute;
-  top: -0.9rem; left: 50%;
-  width: 1.8rem; height: 1.8rem;
-  margin-left: -0.9rem;
-  border-radius: 50%;
-  background: conic-gradient(from 0deg, var(--c), transparent 55%);
-  filter: drop-shadow(0 0 6px var(--c));
-  animation: spin 2.4s linear infinite;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-.tower-body {
-  width: 3.2rem; height: 2.6rem;
-  display: flex; align-items: center; justify-content: center;
-  background: linear-gradient(180deg, #14162a, #0b0c18);
-  border: 1px solid rgb(34 224 255 / 30%);
-  border-bottom: 0;
-  color: var(--c);
-}
-.bldg-tower:hover .tower-body { border-color: var(--c); box-shadow: 0 0 22px rgb(34 224 255 / 45%); }
+/* ---------- 전처리동 ---------- */
+.bldg-prep { --w: 7.5rem; --h: 9rem; --depth: 2px; }
+.bldg-prep .bldg-body { width: var(--w); height: var(--h); }
+.bldg-prep .assembly { top: 2.6rem; }
+.bldg-prep .bldg-windows { top: 4.4rem; }
+.w-prep { background-image:
+  repeating-linear-gradient(90deg, rgb(34 224 255 / 55%) 0 8px, transparent 8px 16px),
+  repeating-linear-gradient(0deg, rgb(34 224 255 / 55%) 0 8px, transparent 8px 18px);
+  filter: drop-shadow(0 0 4px rgb(34 224 255 / 60%)); }
 
 /* ---------- 사무동 ---------- */
 .bldg-office { --w: 5rem; --h: 6rem; --depth: 1px; }
@@ -442,7 +423,8 @@
   .bldg-blog .bldg-body,
   .bldg-lab .bldg-body,
   .bldg-archive .bldg-body,
-  .bldg-office .bldg-body {
+  .bldg-office .bldg-body,
+  .bldg-prep .bldg-body {
     width: 100%;
     height: 7.5rem;
     clip-path: none;
@@ -452,10 +434,6 @@
   .bldg-blog { grid-column: 1 / -1; }
   .bldg-blog .bldg-body { height: 8.5rem; }
   .chimney, .bldg-rooflight { display: none; }
-  .bldg-tower { flex-direction: row; gap: 0.5rem; align-items: center;
-    border: 1px solid rgb(34 224 255 / 30%); border-radius: 4px; padding: 0.8rem; }
-  .tower-mast { height: 2.5rem; }
-  .tower-body { border: 0; width: auto; height: auto; }
   .bldg-count { position: absolute; top: 0.4rem; right: 0.6rem; margin: 0; font-size: 0.8rem; }
 }
 
@@ -463,7 +441,7 @@
 @media (prefers-reduced-motion: reduce) {
   .factory-title::before, .factory-title::after,
   .stars, .haze, .ground-grid, .chimney .smoke,
-  .bldg-sign, .assembly .part, .tower-mast .radar,
+  .bldg-sign, .assembly .part,
   .ticker-track, .bldg-rooflight { animation: none !important; }
   .factory-title::before, .factory-title::after { display: none; }
 }

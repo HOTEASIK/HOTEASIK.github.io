@@ -1,0 +1,45 @@
+/* ===== HOTEASIK · 데이터 전처리 전/후 위젯 ===== */
+
+.data-demo {
+  margin: 1rem 0;
+  padding: 0.8rem 0.9rem 0.6rem;
+  border: 1px solid rgb(34 224 255 / 25%);
+  background: var(--panel-bg, #0d0d16);
+  border-radius: 4px;
+}
+
+.data-demo-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-bottom: 0.6rem;
+  padding: 0.3rem 0.7rem;
+  font-family: var(--mono-font, monospace);
+  font-size: 0.72rem;
+  color: var(--neon-cyan, #22e0ff);
+  background: rgb(34 224 255 / 8%);
+  border: 1px solid rgb(34 224 255 / 40%);
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+.data-demo-toggle:hover,
+.data-demo-toggle:focus-visible {
+  background: rgb(34 224 255 / 18%);
+  box-shadow: 0 0 12px rgb(34 224 255 / 35%);
+  outline: none;
+}
+.data-demo[data-state="after"] .data-demo-toggle {
+  color: var(--neon-magenta, #ff3bd4);
+  border-color: rgb(255 59 212 / 40%);
+  background: rgb(255 59 212 / 8%);
+}
+.data-demo[data-state="after"] .data-demo-toggle:hover,
+.data-demo[data-state="after"] .data-demo-toggle:focus-visible {
+  background: rgb(255 59 212 / 18%);
+  box-shadow: 0 0 12px rgb(255 59 212 / 35%);
+}
+
+.data-demo-stage { max-width: 320px; margin: 0 auto; }
+.data-demo-stage svg { display: block; width: 100%; height: auto; }
+.data-demo-stage svg[hidden] { display: none; }
