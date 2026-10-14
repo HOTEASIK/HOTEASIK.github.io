@@ -1,6 +1,9 @@
 # 카드팩 표시 정보 (키 = _posts 안의 폴더 이름)
 # 없는 폴더는 기본 아이콘 📦, 색은 상위 팩을 따른다. order 가 작을수록 앞에 온다.
 # top: true 인 팩은 글이 없어도 홈에 COMING SOON 으로 표시된다.
+# _etc = 하위 폴더와 글이 같이 있을 때 직속 글을 묶는 팩 (name 으로 이름 변경 가능)
+
+_etc:     { name: "기타", icon: "🗂️" }
 
 ROBOTICS: { icon: "🤖", color: "#ff7b3a", order: 1, top: true }
 AI:       { icon: "🧠", color: "#a371f7", order: 2, top: true }

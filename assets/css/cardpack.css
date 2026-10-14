@@ -51,16 +51,43 @@
 .cp-recent .when { color: var(--muted); white-space: nowrap; }
 
 /* ── 카드팩 ── */
+.cp-packs-wrap { position: relative; }
+.cp.sub .cp-packs-wrap { margin-top: auto; }
 .cp-packs {
-  display: flex; justify-content: center; gap: 40px; flex-wrap: wrap;
+  --pw: 170px;
+  position: relative; display: flex; justify-content: center; gap: 40px; flex-wrap: wrap;
   padding: 40px 0; transition: opacity .3s, transform .3s;
 }
-.cp.sub .cp-packs { margin-top: auto; padding: 24px 0 8px; gap: 28px; }
+.cp.sub .cp-packs { padding: 24px 0 8px; gap: 28px; }
 .cp-packs.hidden { opacity: 0; transform: translateY(-30px); pointer-events: none; }
+.cp-empty { text-align: center; color: var(--muted); line-height: 1.8; padding: 24px 0; }
+.cp-empty a { color: var(--text); }
+
+/* 팩이 한 줄을 넘으면 가로 캐러셀 */
+.cp-packs.carousel {
+  flex-wrap: nowrap; justify-content: flex-start; overflow-x: auto; overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory; scrollbar-width: none; user-select: none; cursor: grab;
+  padding-left: calc(50% - var(--pw) / 2); padding-right: calc(50% - var(--pw) / 2);
+}
+.cp-packs.carousel::-webkit-scrollbar { display: none; }
+.cp-packs.dragging { scroll-snap-type: none; cursor: grabbing; }
+.cp-packs.carousel .cp-pack { flex: 0 0 auto; scroll-snap-align: center; opacity: .5; transform: scale(.9); }
+.cp-packs.carousel .cp-pack.focus { opacity: 1; transform: scale(1.05); }
+.cp-packs.carousel .cp-pack.focus:hover { transform: translateY(-8px) scale(1.05); }
+.cp-arrow {
+  display: none; position: absolute; top: 50%; z-index: 2; transform: translateY(-50%);
+  width: 36px; height: 36px; border-radius: 50%; font-size: 20px; line-height: 1; cursor: pointer;
+  background: var(--panel); color: var(--text); border: 1px solid var(--line);
+}
+.cp-arrow.prev { left: 0; }
+.cp-arrow.next { right: 0; }
+.cp-packs-wrap.carousel:not(.hidden) .cp-arrow { display: block; }
 .cp-pack { width: 170px; height: 250px; cursor: pointer; position: relative; transition: transform .5s cubic-bezier(.2,.8,.3,1.1), opacity .5s; }
 .cp-pack:hover { transform: translateY(-10px) rotate(-2deg); }
 .cp-pack.empty { cursor: default; opacity: .5; }
 .cp-pack.empty:hover { transform: none; }
+.cp-pack:focus-visible { outline: none; }
+.cp-pack:focus-visible .face, .cp-card:focus-visible, .cp-recent li:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 .cp-pack::before, .cp-pack::after {           /* 팩 뒤에 겹친 카드 느낌 */
   content: ""; position: absolute; inset: 0; border-radius: 14px;
   background: var(--panel); box-shadow: 0 0 0 1px var(--c);
@@ -124,7 +151,8 @@
 .cp-close { position: absolute; top: 14px; right: 16px; background: none; border: 0; color: var(--muted); font-size: 22px; cursor: pointer; }
 
 @media (max-width: 600px) {
-  .cp-packs { gap: 24px; padding-top: 24px; }
+  .cp-packs { --pw: 130px; gap: 24px; padding-top: 24px; }
+  .cp.sub .cp-packs { --pw: 110px; }
   .cp-pack { width: 130px; height: 190px; }
   .cp-pack .icon { font-size: 40px; }
   .cp-pack .name { font-size: 16px; }
@@ -134,4 +162,9 @@
   .cp-card .emoji { font-size: 32px; height: 40px; margin: 10px 0 6px; }
   .cp-card .title { font-size: 12px; }
   .cp-dashboard { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* OS '동작 줄이기' 설정 시 애니메이션 최소화 */
+@media (prefers-reduced-motion: reduce) {
+  .cp *, .cp *::before, .cp *::after { transition-duration: 0s !important; transition-delay: 0s !important; animation: none !important; }
 }

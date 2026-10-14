@@ -4,7 +4,8 @@ layout: default
 
 <link rel="stylesheet" href="{{ '/assets/css/cardpack.css' | relative_url }}">
 
-<div id="cardpack" class="cp">
+<div id="cardpack" class="cp" data-blog="{{ '/blog/' | relative_url }}">
+  <noscript><p class="cp-empty">JavaScript 가 꺼져 있어 카드팩을 볼 수 없습니다.<br><a href="{{ '/blog/' | relative_url }}">블로그에서 글 보기 →</a></p></noscript>
   <div class="cp-nav" id="cp-nav">
     <button type="button" id="cp-back">← 뒤로</button>
     <div class="cp-crumb" id="cp-crumb"></div>
@@ -16,10 +17,14 @@ layout: default
   </div>
   <div class="cp-level-title" id="cp-level-title"></div>
   <section class="cp-dashboard" id="cp-dashboard"></section>
-  <section class="cp-packs" id="cp-packs"></section>
+  <div class="cp-packs-wrap" id="cp-packs-wrap">
+    <button type="button" class="cp-arrow prev" id="cp-prev" aria-label="이전 팩">‹</button>
+    <section class="cp-packs" id="cp-packs"></section>
+    <button type="button" class="cp-arrow next" id="cp-next" aria-label="다음 팩">›</button>
+  </div>
   <section class="cp-hand" id="cp-hand"></section>
 
-  <section class="cp-detail" id="cp-detail">
+  <section class="cp-detail" id="cp-detail" role="dialog" aria-modal="true" aria-label="카드 상세">
     <div class="cp-flip"><div class="cp-flip-inner">
       <div class="cp-face cp-front" id="cp-detail-front"></div>
       <div class="cp-face cp-back" id="cp-detail-back"></div>
@@ -28,7 +33,7 @@ layout: default
 </div>
 
 {%- comment -%} _posts/<상위팩>/<하위팩>/글.md 의 폴더 경로를 f 로 넘긴다. _posts 바로 아래 글은 제외 {%- endcomment -%}
-<script type="application/json" id="cardpack-posts">[
+{%- capture cp_posts -%}[
 {%- assign sep = "" -%}
 {%- for post in site.posts -%}
   {%- assign segs = post.path | split: '/' -%}
@@ -40,7 +45,9 @@ layout: default
   {{ sep }}{"t":{{ post.title | jsonify }},"u":{{ post.url | relative_url | jsonify }},"d":"{{ post.date | date: '%Y-%m-%d' }}","f":{{ folders | jsonify }},"tags":{{ post.tags | jsonify }},"x":{{ excerpt | jsonify }},"icon":{% if post.icon %}{{ post.icon | relative_url | jsonify }}{% else %}null{% endif %},"emoji":{{ post.emoji | jsonify }},"img":{% if img %}{{ img | relative_url | jsonify }}{% else %}null{% endif %}}
   {%- assign sep = "," -%}
 {%- endfor -%}
-]</script>
-<script type="application/json" id="cardpack-meta">{{ site.data.packs | jsonify }}</script>
+]{%- endcapture -%}
+{%- comment -%} 제목 등에 </script> 가 있어도 태그가 닫히지 않도록 "</" → "<\/" {%- endcomment -%}
+<script type="application/json" id="cardpack-posts">{{ cp_posts | replace: "</", "<\/" }}</script>
+<script type="application/json" id="cardpack-meta">{{ site.data.packs | jsonify | replace: "</", "<\/" }}</script>
 
 <script defer src="{{ '/assets/js/cardpack.js' | relative_url }}"></script>
