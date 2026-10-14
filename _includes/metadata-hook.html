@@ -19,6 +19,10 @@
       if (s === 'rail' || s === 'hidden' || s === 'expanded') {
         document.documentElement.setAttribute('data-sb', s);
       }
+      var w = parseInt(localStorage.getItem('hoteasik-sb-w'), 10);
+      if (w >= 180 && w <= 480) {
+        document.documentElement.style.setProperty('--sb-exp', w + 'px');
+      }
     } catch (e) {}
   })();
 </script>

@@ -2,8 +2,8 @@
 
 .cp {
   --bg: #0d1117; --panel: #161b22; --text: #e6edf3; --muted: #8b949e; --line: #30363d;
-  position: relative; margin: -0.5rem 0 1rem; padding: 24px 16px 32px; border-radius: 16px;
-  min-height: calc(100vh - 8rem); display: flex; flex-direction: column;
+  position: relative; margin: 0 0 1rem; padding: 24px 16px 32px; border-radius: 16px;
+  min-height: calc(100vh - 4.5rem); display: flex; flex-direction: column;   /* 상단바 높이만 빼고 화면을 채움 */
   background: radial-gradient(ellipse at 50% 120%, #1f2a3a 0%, var(--bg) 60%);
   color: var(--text);
 }
@@ -22,7 +22,7 @@
 
 /* ── 대시보드 (하위 팩 화면 상단) ── */
 .cp-dashboard {
-  display: none; width: 100%; max-width: 960px; margin: 16px auto 0;
+  display: none; width: 100%; max-width: 1280px; margin: 16px auto 0;
   grid-template-columns: repeat(4, 1fr); gap: 12px; align-content: start; transition: opacity .3s;
 }
 .cp.sub .cp-dashboard { display: grid; }
