@@ -1,0 +1,137 @@
+/* ===== HOTEASIK · 카드팩 홈 ===== */
+
+.cp {
+  --bg: #0d1117; --panel: #161b22; --text: #e6edf3; --muted: #8b949e; --line: #30363d;
+  position: relative; margin: -0.5rem 0 1rem; padding: 24px 16px 32px; border-radius: 16px;
+  min-height: calc(100vh - 8rem); display: flex; flex-direction: column;
+  background: radial-gradient(ellipse at 50% 120%, #1f2a3a 0%, var(--bg) 60%);
+  color: var(--text);
+}
+
+/* ── 뒤로 / 경로 ── */
+.cp-nav { display: flex; align-items: center; gap: 12px; min-height: 36px; visibility: hidden; }
+.cp-nav.show { visibility: visible; }
+.cp-nav button { padding: 6px 14px; border-radius: 8px; background: var(--panel); color: var(--text); border: 1px solid var(--line); cursor: pointer; }
+.cp-crumb { font-size: 13px; color: var(--muted); letter-spacing: 1px; }
+.cp-crumb b { color: var(--text); }
+
+.cp-head { text-align: center; }
+.cp-head h1 { margin: 0; font-size: 28px; letter-spacing: 2px; color: var(--text); }
+.cp-head p { margin: 6px 0 0; color: var(--muted); }
+.cp-level-title { text-align: center; margin-top: 20px; font-size: 22px; font-weight: 700; min-height: 30px; }
+
+/* ── 대시보드 (하위 팩 화면 상단) ── */
+.cp-dashboard {
+  display: none; width: 100%; max-width: 960px; margin: 16px auto 0;
+  grid-template-columns: repeat(4, 1fr); gap: 12px; align-content: start; transition: opacity .3s;
+}
+.cp.sub .cp-dashboard { display: grid; }
+.cp-dashboard.hidden { opacity: 0; pointer-events: none; }
+.cp-panel { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; min-width: 0; }
+.cp-panel h3 { margin: 0 0 10px; font-size: 12px; color: var(--muted); font-weight: 600; letter-spacing: 1px; }
+.cp-stat { border-top: 2px solid var(--c); }
+.cp-stat .v { font-size: 26px; font-weight: 700; }
+.cp-stat .l { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.cp-wide { grid-column: span 2; }
+.cp-rows2 { grid-row: span 2; }
+.cp-barplot { display: flex; align-items: flex-end; justify-content: space-around; height: 150px; border-bottom: 1px solid var(--line); padding-top: 20px; }
+.cp-bar-col { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; flex: 1; max-width: 56px; }
+.cp-bar-col .n { font-size: 13px; margin-bottom: 4px; }
+.cp-bar { width: 70%; max-width: 36px; border-radius: 4px 4px 0 0; background: var(--c); transition: filter .2s; }
+.cp-bar-col:hover .cp-bar { filter: brightness(1.25); }
+.cp-bar-labels { display: flex; justify-content: space-around; margin-top: 6px; font-size: 11px; color: var(--muted); }
+.cp-bar-labels span { flex: 1; max-width: 56px; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cp-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.cp-chips span { font-size: 12px; padding: 3px 10px; border-radius: 99px; border: 1px solid var(--line); }
+.cp-chips em { font-style: normal; color: var(--muted); margin-left: 4px; }
+.cp-recent { list-style: none; margin: 0; padding: 0; }
+.cp-recent li { display: flex; justify-content: space-between; gap: 8px; padding: 6px 0; border-bottom: 1px solid #21262d; font-size: 13px; cursor: pointer; }
+.cp-recent li:last-child { border-bottom: 0; }
+.cp-recent li:hover { color: var(--c); }
+.cp-recent .when { color: var(--muted); white-space: nowrap; }
+
+/* ── 카드팩 ── */
+.cp-packs {
+  display: flex; justify-content: center; gap: 40px; flex-wrap: wrap;
+  padding: 40px 0; transition: opacity .3s, transform .3s;
+}
+.cp.sub .cp-packs { margin-top: auto; padding: 24px 0 8px; gap: 28px; }
+.cp-packs.hidden { opacity: 0; transform: translateY(-30px); pointer-events: none; }
+.cp-pack { width: 170px; height: 250px; cursor: pointer; position: relative; transition: transform .5s cubic-bezier(.2,.8,.3,1.1), opacity .5s; }
+.cp-pack:hover { transform: translateY(-10px) rotate(-2deg); }
+.cp-pack.empty { cursor: default; opacity: .5; }
+.cp-pack.empty:hover { transform: none; }
+.cp-pack::before, .cp-pack::after {           /* 팩 뒤에 겹친 카드 느낌 */
+  content: ""; position: absolute; inset: 0; border-radius: 14px;
+  background: var(--panel); box-shadow: 0 0 0 1px var(--c);
+}
+.cp-pack::before { transform: rotate(-5deg) translate(-6px, 4px); }
+.cp-pack::after  { transform: rotate(5deg) translate(6px, 4px); }
+.cp-pack .face {
+  position: absolute; inset: 0; z-index: 1; border-radius: 14px;
+  background: linear-gradient(160deg, var(--c) 0%, #0d1117 140%);
+  box-shadow: 0 0 0 2px var(--c), 0 12px 30px rgba(0,0,0,.5), 0 0 30px -5px var(--c);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.cp-pack .parent { position: absolute; top: 12px; font-size: 10px; letter-spacing: 2px; opacity: .8; }
+.cp-pack .icon { font-size: 54px; }
+.cp-pack .name { margin-top: 12px; font-weight: 700; font-size: 20px; letter-spacing: 1px; }
+.cp-pack .count { margin-top: 4px; font-size: 13px; opacity: .8; }
+
+/* ── 손에 편 카드 ── */
+.cp-hand { position: fixed; inset: 0; pointer-events: none; z-index: 1040; }
+.cp-card {
+  position: absolute; left: 50%; bottom: -40px; width: 160px; height: 230px; margin-left: -80px;
+  border-radius: 12px; background: var(--panel); cursor: pointer; pointer-events: auto;
+  box-shadow: 0 0 0 2px var(--c), 0 10px 25px rgba(0,0,0,.6);
+  transform-origin: 50% 260%;
+  transition: transform .5s cubic-bezier(.2,.8,.3,1.2), box-shadow .2s;
+  padding: 16px; display: flex; flex-direction: column; color: var(--text);
+}
+.cp-card .tag { font-size: 11px; color: var(--c); font-weight: 700; letter-spacing: 1px; }
+.cp-card .emoji { font-size: 44px; height: 56px; margin: 14px 0 10px; text-align: center; }
+.cp-card .emoji img { height: 100%; }
+.cp-card .title { font-weight: 700; font-size: 15px; text-align: center; }
+.cp-card .sub { margin-top: auto; font-size: 11px; color: var(--muted); text-align: center; }
+.cp-card:hover { box-shadow: 0 0 0 2px var(--c), 0 0 30px var(--c); }
+
+/* ── 카드 상세 ── */
+.cp-detail {
+  position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
+  background: rgba(5,8,12,.75); backdrop-filter: blur(4px); z-index: 1050;
+  opacity: 0; pointer-events: none; transition: opacity .3s; padding: 16px;
+}
+.cp-detail.open { opacity: 1; pointer-events: auto; }
+.cp-flip { perspective: 1200px; width: min(560px, 100%); height: min(620px, 85vh); }
+.cp-flip-inner { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform .7s; transform: rotateY(180deg) scale(.4); }
+.cp-detail.open .cp-flip-inner { transform: rotateY(0) scale(1); }
+.cp-face {
+  position: absolute; inset: 0; border-radius: 18px; backface-visibility: hidden; color: var(--text);
+  background: var(--panel); box-shadow: 0 0 0 2px var(--c), 0 0 50px -10px var(--c);
+  padding: 28px; overflow-y: auto;
+}
+.cp-face.cp-back { transform: rotateY(180deg); display: flex; align-items: center; justify-content: center; font-size: 80px; }
+.cp-face.cp-back img { width: 40%; }
+.cp-detail .tag { color: var(--c); font-size: 12px; font-weight: 700; letter-spacing: 1px; }
+.cp-detail h2 { margin: 8px 0 4px; color: var(--text); }
+.cp-detail .period { color: var(--muted); font-size: 13px; }
+.cp-detail .stack { display: flex; gap: 6px; flex-wrap: wrap; margin: 16px 0; }
+.cp-detail .stack span { font-size: 12px; padding: 3px 10px; border-radius: 99px; border: 1px solid var(--c); color: var(--c); }
+.cp-detail p { line-height: 1.7; color: #c9d1d9; }
+.cp-detail .media { width: 100%; max-height: 220px; object-fit: cover; border-radius: 10px; }
+.cp-detail .read { display: inline-block; margin-top: 8px; padding: 8px 16px; border-radius: 8px; border: 1px solid var(--c); color: var(--c); text-decoration: none; }
+.cp-detail .read:hover { background: var(--c); color: var(--bg); }
+.cp-close { position: absolute; top: 14px; right: 16px; background: none; border: 0; color: var(--muted); font-size: 22px; cursor: pointer; }
+
+@media (max-width: 600px) {
+  .cp-packs { gap: 24px; padding-top: 24px; }
+  .cp-pack { width: 130px; height: 190px; }
+  .cp-pack .icon { font-size: 40px; }
+  .cp-pack .name { font-size: 16px; }
+  .cp.sub .cp-pack { width: 110px; height: 160px; }
+  .cp.sub .cp-pack .icon { font-size: 32px; }
+  .cp-card { width: 120px; height: 175px; margin-left: -60px; padding: 10px; }
+  .cp-card .emoji { font-size: 32px; height: 40px; margin: 10px 0 6px; }
+  .cp-card .title { font-size: 12px; }
+  .cp-dashboard { grid-template-columns: repeat(2, 1fr); }
+}

@@ -1,0 +1,9 @@
+# 사이드바 하단 아이콘
+- type: github
+  icon: "fab fa-github"
+- type: email
+  icon: "fas fa-envelope"
+  noblank: true
+- type: rss
+  icon: "fas fa-rss"
+  noblank: true

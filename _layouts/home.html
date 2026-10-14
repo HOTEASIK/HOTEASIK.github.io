@@ -1,0 +1,46 @@
+---
+layout: default
+---
+
+<link rel="stylesheet" href="{{ '/assets/css/cardpack.css' | relative_url }}">
+
+<div id="cardpack" class="cp">
+  <div class="cp-nav" id="cp-nav">
+    <button type="button" id="cp-back">← 뒤로</button>
+    <div class="cp-crumb" id="cp-crumb"></div>
+  </div>
+
+  <div class="cp-head">
+    <h1>{{ site.title }}</h1>
+    <p>Robot Developer · 카드팩을 열어 프로젝트를 확인하세요</p>
+  </div>
+  <div class="cp-level-title" id="cp-level-title"></div>
+  <section class="cp-dashboard" id="cp-dashboard"></section>
+  <section class="cp-packs" id="cp-packs"></section>
+  <section class="cp-hand" id="cp-hand"></section>
+
+  <section class="cp-detail" id="cp-detail">
+    <div class="cp-flip"><div class="cp-flip-inner">
+      <div class="cp-face cp-front" id="cp-detail-front"></div>
+      <div class="cp-face cp-back" id="cp-detail-back"></div>
+    </div></div>
+  </section>
+</div>
+
+{%- comment -%} _posts/<상위팩>/<하위팩>/글.md 의 폴더 경로를 f 로 넘긴다. _posts 바로 아래 글은 제외 {%- endcomment -%}
+<script type="application/json" id="cardpack-posts">[
+{%- assign sep = "" -%}
+{%- for post in site.posts -%}
+  {%- assign segs = post.path | split: '/' -%}
+  {%- assign n = segs.size | minus: 2 -%}
+  {%- if n < 1 -%}{%- continue -%}{%- endif -%}
+  {%- assign folders = segs | slice: 1, n -%}
+  {%- assign img = post.image.path | default: post.image -%}
+  {%- assign excerpt = post.description | default: post.excerpt | strip_html | strip_newlines | truncate: 160 -%}
+  {{ sep }}{"t":{{ post.title | jsonify }},"u":{{ post.url | relative_url | jsonify }},"d":"{{ post.date | date: '%Y-%m-%d' }}","f":{{ folders | jsonify }},"tags":{{ post.tags | jsonify }},"x":{{ excerpt | jsonify }},"icon":{% if post.icon %}{{ post.icon | relative_url | jsonify }}{% else %}null{% endif %},"emoji":{{ post.emoji | jsonify }},"img":{% if img %}{{ img | relative_url | jsonify }}{% else %}null{% endif %}}
+  {%- assign sep = "," -%}
+{%- endfor -%}
+]</script>
+<script type="application/json" id="cardpack-meta">{{ site.data.packs | jsonify }}</script>
+
+<script defer src="{{ '/assets/js/cardpack.js' | relative_url }}"></script>
