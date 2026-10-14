@@ -13,148 +13,147 @@
 ';
 
 /* ============================================================
-   HOTEASIK · 사이버펑크 네온 스킨
+   HOTEASIK · 카드팩 스킨
+   카드팩 홈과 같은 다크 톤(#0d1117 / #161b22) + 팩 색 포인트
    기존 Chirpy 다크 CSS 변수 위에 덮어씀 (theme_mode: dark 고정)
    ============================================================ */
 
 :root,
 html[data-mode='dark'],
 html:not([data-mode]) {
+  /* -- 카드팩 토큰 -- */
+  --pack-robotics: #ff7b3a;
+  --pack-ai: #a371f7;
+  --pack-coding: #3fb950;
+  --accent: var(--pack-ai);
+  --accent-soft: rgb(163 113 247 / 14%);
+  --accent-line: linear-gradient(90deg, var(--pack-robotics), var(--pack-ai), var(--pack-coding));
+  --panel-bg: #161b22;
+  --line: #30363d;
+  --line-soft: #21262d;
+  --ui-font: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', ui-sans-serif, system-ui, sans-serif;
+  --mono-font: 'Cascadia Code', ui-monospace, Consolas, monospace;
+  /* 데이터 전/후 위젯(data-demo)이 쓰는 이전 토큰 → 새 팔레트로 연결 */
+  --neon-cyan: #58a6ff;
+  --neon-magenta: var(--pack-ai);
+  --neon-amber: #d29922;
+
   /* -- 프레임 -- */
-  --main-bg: #08080c;
-  --mask-bg: #14141f;
-  --main-border-color: #1c1c2e;
+  --main-bg: #0d1117;
+  --mask-bg: #161b22;
+  --main-border-color: var(--line-soft);
 
   /* -- 본문 -- */
-  --text-color: #b9c4d0;
-  --text-muted-color: #6f7a8d;
-  --text-muted-highlight-color: #9fb0c4;
-  --heading-color: #eafcff;
-  --label-color: #8ea0b4;
-  --blockquote-border-color: #1f6b78;
-  --blockquote-text-color: #8b9bab;
+  --text-color: #c9d1d9;
+  --text-muted-color: #8b949e;
+  --text-muted-highlight-color: #b1bac4;
+  --heading-color: #e6edf3;
+  --label-color: #8b949e;
+  --blockquote-border-color: var(--accent);
+  --blockquote-text-color: #8b949e;
 
-  /* -- 링크 = 네온 시안 -- */
-  --link-color: #22e0ff;
-  --link-underline-color: #0c6c7c;
+  --link-color: #58a6ff;
+  --link-underline-color: rgb(88 166 255 / 40%);
 
-  --button-bg: #10101a;
-  --btn-border-color: #24243c;
-  --btn-backtotop-color: #22e0ff;
-  --btn-backtotop-border-color: #24243c;
+  --button-bg: #161b22;
+  --btn-border-color: var(--line);
+  --btn-backtotop-color: #e6edf3;
+  --btn-backtotop-border-color: var(--line);
 
-  --card-bg: #0e0e18;
-  --card-hover-bg: #161628;
-  --card-header-bg: #14142200;
-  --card-border-color: #20203a;
-  --card-shadow: rgb(0 0 0 / 60%) 0 6px 20px 0, rgb(34 224 255 / 10%) 0 0 0 1px;
+  --card-bg: #161b22;
+  --card-hover-bg: #1c2128;
+  --card-header-bg: #161b22;
+  --card-border-color: var(--line);
+  --card-shadow: rgb(0 0 0 / 40%) 0 6px 18px 0;
 
-  --checkbox-color: #4b5a63;
-  --checkbox-checked-color: #22e0ff;
+  --checkbox-color: #484f58;
+  --checkbox-checked-color: var(--accent);
 
-  --img-bg: radial-gradient(circle, #0c0c14 0%, #12121c 100%);
-  --shimmer-bg: linear-gradient(
-    90deg,
-    rgb(255 255 255 / 0%) 0%,
-    rgb(34 224 255 / 15%) 50%,
-    rgb(255 255 255 / 0%) 100%
-  );
+  --img-bg: radial-gradient(circle, #161b22 0%, #0d1117 100%);
+  --shimmer-bg: linear-gradient(90deg, rgb(255 255 255 / 0%) 0%, rgb(255 255 255 / 6%) 50%, rgb(255 255 255 / 0%) 100%);
 
-  --menu-bg: #0d0d16;
-  --menu-border-color: rgb(34 224 255 / 22%);
-  --menu-shadow-color: rgb(0 0 0 / 60%);
-  --menu-active-color: #22e0ff;
-  --menu-highlight-bg: rgb(34 224 255 / 12%);
+  --menu-bg: #161b22;
+  --menu-border-color: var(--line);
+  --menu-shadow-color: rgb(0 0 0 / 50%);
+  --menu-active-color: var(--accent);
+  --menu-highlight-bg: var(--accent-soft);
 
   /* -- 사이드바 -- */
-  --site-title-color: #eafcff;
-  --site-subtitle-color: #7f8ca0;
-  --sidebar-bg:
-    linear-gradient(180deg, #0b0b13 0%, #08080d 60%, #0a0a12 100%);
-  --sidebar-border-color: #1b1b30;
-  --sidebar-muted-color: #7f8ca0;
-  --sidebar-active-color: #22e0ff;
-  --sidebar-hover-bg: rgb(34 224 255 / 10%);
-  --sidebar-btn-bg: #12121e;
-  --sidebar-btn-color: #8ea0b4;
-  --avatar-border-color: #22e0ff;
+  --site-title-color: #e6edf3;
+  --site-subtitle-color: #8b949e;
+  --sidebar-bg: #010409;
+  --sidebar-border-color: var(--line-soft);
+  --sidebar-muted-color: #8b949e;
+  --sidebar-active-color: #e6edf3;
+  --sidebar-hover-bg: #161b22;
+  --sidebar-btn-bg: #161b22;
+  --sidebar-btn-color: #8b949e;
+  --avatar-border-color: var(--line);
 
   /* -- 상단바 -- */
-  --topbar-bg: rgb(8 8 13 / 82%);
-  --topbar-text-color: #cdd8e4;
-  --search-border-color: #24243c;
-  --search-icon-color: #5a6a7d;
-  --input-focus-border-color: #22e0ff;
+  --topbar-bg: rgb(13 17 23 / 85%);
+  --topbar-text-color: #c9d1d9;
+  --search-border-color: var(--line);
+  --search-icon-color: #8b949e;
+  --input-focus-border-color: var(--accent);
 
   /* -- 홈 -- */
-  --post-list-text-color: #aab4c2;
-  --btn-patinator-text-color: #b9c4d0;
-  --btn-paginator-hover-color: #161628;
+  --post-list-text-color: #8b949e;
+  --btn-patinator-text-color: #c9d1d9;
+  --btn-paginator-hover-color: #1c2128;
 
   /* -- 글 -- */
-  --toc-highlight: #22e0ff;
-  --toc-popup-border-color: #20203a;
-  --tag-hover: rgb(34 224 255 / 18%);
-  --tb-odd-bg: #10101c;
-  --tb-even-bg: #0c0c16;
-  --tb-border-color: #20203a;
-  --footnote-target-bg: rgb(34 224 255 / 25%);
-  --btn-share-color: #6f7a8d;
-  --btn-share-hover-color: #22e0ff;
-  --kbd-wrap-color: #8ea0b4;
-  --kbd-text-color: #eafcff;
-  --kbd-bg-color: #12121e;
+  --toc-highlight: var(--accent);
+  --toc-popup-border-color: var(--line);
+  --tag-hover: var(--accent-soft);
+  --tb-odd-bg: #161b22;
+  --tb-even-bg: #0d1117;
+  --tb-border-color: var(--line);
+  --footnote-target-bg: var(--accent-soft);
+  --btn-share-color: #8b949e;
+  --btn-share-hover-color: #e6edf3;
+  --kbd-wrap-color: #8b949e;
+  --kbd-text-color: #e6edf3;
+  --kbd-bg-color: #161b22;
 
-  --prompt-text-color: rgb(216 226 236 / 80%);
-  --prompt-tip-bg: rgb(6 74 60 / 55%);
-  --prompt-tip-icon-color: #17d1a3;
-  --prompt-info-bg: rgb(7 44 84 / 65%);
-  --prompt-info-icon-color: #22e0ff;
-  --prompt-warning-bg: rgb(88 62 6 / 70%);
-  --prompt-warning-icon-color: #ffb020;
-  --prompt-danger-bg: rgb(90 16 44 / 60%);
-  --prompt-danger-icon-color: #ff3bd4;
+  --prompt-text-color: rgb(201 209 217 / 90%);
+  --prompt-tip-bg: rgb(63 185 80 / 10%);
+  --prompt-tip-icon-color: #3fb950;
+  --prompt-info-bg: rgb(88 166 255 / 10%);
+  --prompt-info-icon-color: #58a6ff;
+  --prompt-warning-bg: rgb(210 153 34 / 12%);
+  --prompt-warning-icon-color: #d29922;
+  --prompt-danger-bg: rgb(248 81 73 / 10%);
+  --prompt-danger-icon-color: #f85149;
 
   /* -- 태그 -- */
-  --tag-border: #1f6b78;
-  --tag-shadow: #0c0c16;
-  --dash-color: #24243c;
-  --search-tag-bg: #12121e;
+  --tag-border: var(--line);
+  --tag-shadow: transparent;
+  --dash-color: var(--line);
+  --search-tag-bg: #161b22;
 
   /* -- 카테고리 -- */
-  --categories-border: rgb(34 224 255 / 20%);
-  --categories-hover-bg: #161628;
-  --categories-icon-hover-color: #22e0ff;
+  --categories-border: var(--line);
+  --categories-hover-bg: #1c2128;
+  --categories-icon-hover-color: var(--accent);
 
   /* -- 아카이브 -- */
-  --timeline-node-bg: #22e0ff;
-  --timeline-color: #24243c;
-  --timeline-year-dot-color: #24243c;
+  --timeline-node-bg: var(--accent);
+  --timeline-color: var(--line);
+  --timeline-year-dot-color: var(--line);
 
   /* -- 코드 -- */
-  --language-border-color: #1c1c2e;
-  --highlight-bg-color: #0b0b13;
-  --highlighter-rouge-color: #7ce7ff;
-  --highlight-lineno-color: #4b5a63;
-  --inline-code-bg: rgb(34 224 255 / 8%);
-  --code-color: #c3d7e6;
-  --code-header-text-color: #6f7a8d;
-  --code-header-muted-color: #20203a;
-  --code-header-icon-color: #4b5a63;
-  --clipboard-checked-color: #17d1a3;
-  --filepath-text-color: #eafcff;
-
-  /* -- HOTEASIK 전용 토큰 -- */
-  --neon-cyan: #22e0ff;
-  --neon-magenta: #ff3bd4;
-  --neon-amber: #ffb020;
-  --neon-green: #57ffb0;
-  --panel-bg: #0d0d16;
-  --grid-line: rgb(34 224 255 / 5%);
-  --display-font: 'Orbitron', 'Rajdhani', ui-sans-serif, system-ui, sans-serif;
-  --mono-font: 'Share Tech Mono', ui-monospace, 'Cascadia Code', Consolas, monospace;
-  --ui-font: 'Rajdhani', 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic',
-    ui-sans-serif, system-ui, sans-serif;
+  --language-border-color: var(--line-soft);
+  --highlight-bg-color: #010409;
+  --highlighter-rouge-color: #e6edf3;
+  --highlight-lineno-color: #484f58;
+  --inline-code-bg: rgb(110 118 129 / 25%);
+  --code-color: #c9d1d9;
+  --code-header-text-color: #8b949e;
+  --code-header-muted-color: var(--line);
+  --code-header-icon-color: #484f58;
+  --clipboard-checked-color: #3fb950;
+  --filepath-text-color: #e6edf3;
 
   /* -- 3단 사이드바 폭 -- */
   --sb-w: 260px;
@@ -163,120 +162,98 @@ html:not([data-mode]) {
 html[data-sb='rail'] { --sb-w: 74px; }
 html[data-sb='hidden'] { --sb-w: 0px; }
 
-/* ---------- 바탕: 네온 그리드 + 글로우 ---------- */
+/* ---------- 바탕 / 타이포 ---------- */
 body {
   background-color: var(--main-bg);
-  background-image:
-    radial-gradient(ellipse 60% 50% at 15% 0%, rgb(34 224 255 / 8%), transparent 60%),
-    radial-gradient(ellipse 50% 45% at 100% 100%, rgb(255 59 212 / 7%), transparent 60%),
-    linear-gradient(var(--grid-line) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
-  background-size: 100% 100%, 100% 100%, 44px 44px, 44px 44px;
-  background-attachment: fixed;
   font-family: var(--ui-font);
 }
 
-/* 스캔라인 오버레이 */
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: 2000;
-  pointer-events: none;
-  background: repeating-linear-gradient(
-    0deg,
-    rgb(0 0 0 / 0%) 0,
-    rgb(0 0 0 / 0%) 2px,
-    rgb(0 0 0 / 12%) 3px,
-    rgb(0 0 0 / 0%) 4px
-  );
-  mix-blend-mode: multiply;
-  opacity: 0.5;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  body::after { display: none; }
-}
-
 ::selection {
-  background: var(--neon-cyan);
-  color: #05050a;
+  background: var(--accent);
+  color: #0d1117;
 }
 
-/* ---------- 타이포 ---------- */
 h1, h2, h3, h4, h5,
 .site-title,
-#page-title,
-.post-content h1,
+#page-title {
+  font-family: var(--ui-font);
+  font-weight: 700;
+}
+
 .post-content h2 {
-  font-family: var(--display-font);
-  letter-spacing: 0.5px;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--line-soft);
 }
 
-h1, h2 { text-shadow: 0 0 18px rgb(34 224 255 / 25%); }
-
-#core-wrapper .post-content {
-  font-size: 1.02rem;
-}
+#core-wrapper .post-content { line-height: 1.85; }
 
 a { text-decoration-color: var(--link-underline-color); }
-a:hover { text-shadow: 0 0 10px rgb(34 224 255 / 45%); }
+#core-wrapper a { text-underline-offset: 3px; }
+
+blockquote {
+  background: rgb(163 113 247 / 6%);
+  border-radius: 0 8px 8px 0;
+}
 
 /* ---------- 사이드바 ---------- */
 #sidebar {
   border-right: 1px solid var(--sidebar-border-color);
-  box-shadow: 1px 0 0 rgb(34 224 255 / 12%), 12px 0 40px -20px rgb(34 224 255 / 20%);
   transition: width 0.28s ease, transform 0.28s ease;
 
+  /* 상단 팩 색 라인 */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--accent-line);
+    z-index: 1;
+  }
+
   .site-title {
-    font-weight: 900;
-    text-transform: uppercase;
+    font-weight: 800;
+    letter-spacing: 1px;
     color: var(--site-title-color);
-    text-shadow:
-      0 0 8px rgb(34 224 255 / 55%),
-      2px 0 0 rgb(255 59 212 / 45%),
-      -2px 0 0 rgb(34 224 255 / 45%);
   }
 
   .site-subtitle {
-    font-family: var(--mono-font);
-    font-size: 0.78rem;
-    color: var(--site-subtitle-color);
+    font-size: 0.8rem;
     font-style: normal;
+    line-height: 1.5;
+    color: var(--site-subtitle-color);
   }
 
   #avatar {
     border-radius: 50%;
-    box-shadow:
-      0 0 0 2px var(--neon-cyan),
-      0 0 22px rgb(34 224 255 / 55%),
-      inset 0 0 20px rgb(0 0 0 / 60%);
-    background: radial-gradient(circle at 50% 45%, #10131c, #06060b 75%);
+    background: var(--panel-bg);
+    box-shadow: 0 0 0 2px var(--main-bg), 0 0 0 4px var(--line);
 
     img { border-radius: 50%; }
   }
 
-  .nav-link {
-    font-family: var(--ui-font);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.6px;
+  .nav-item {
+    .nav-link {
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      border-left: 3px solid transparent;
+    }
 
-    i { color: var(--neon-cyan); opacity: 0.85; }
-  }
+    &.active .nav-link {
+      color: var(--sidebar-active-color);
+      border-left-color: var(--accent);
+      background: linear-gradient(90deg, var(--accent-soft), transparent);
 
-  .nav-item.active .nav-link {
-    box-shadow: inset 3px 0 0 var(--neon-cyan);
-    background: linear-gradient(90deg, rgb(34 224 255 / 16%), transparent);
+      i { color: var(--accent); }
+    }
   }
 
   .sidebar-bottom {
     #mode-toggle,
-    > a { box-shadow: var(--neon-cyan) 0 0 0 1px inset; }
+    > a { box-shadow: var(--line) 0 0 0 1px inset; }
   }
 }
 
-/* --- 토글 버튼 (사이드바 헤더에 삽입) --- */
+/* --- 접기/펴기 버튼 (사이드바 헤더에 삽입) --- */
 #sb-toggle {
   position: absolute;
   top: 0.9rem;
@@ -286,18 +263,18 @@ a:hover { text-shadow: 0 0 10px rgb(34 224 255 / 45%); }
   display: none;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--neon-cyan);
-  border-radius: 6px;
-  background: rgb(34 224 255 / 8%);
-  color: var(--neon-cyan);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-bg);
+  color: var(--text-muted-color);
   cursor: pointer;
   font-size: 0.85rem;
   z-index: 5;
-  transition: background 0.2s;
+  transition: color 0.2s, border-color 0.2s;
 }
-#sb-toggle:hover { background: rgb(34 224 255 / 20%); box-shadow: 0 0 14px rgb(34 224 255 / 40%); }
+#sb-toggle:hover { color: var(--heading-color); border-color: var(--accent); }
 
-/* --- 사이드바 숨김 시 나타나는 재열기 손잡이 --- */
+/* --- 사이드바 숨김 시 나타나는 다시 열기 손잡이 --- */
 #sb-reopen {
   position: fixed;
   top: 50%;
@@ -308,15 +285,15 @@ a:hover { text-shadow: 0 0 10px rgb(34 224 255 / 45%); }
   display: none;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--neon-cyan);
+  border: 1px solid var(--line);
   border-left: 0;
   border-radius: 0 10px 10px 0;
   background: var(--panel-bg);
-  color: var(--neon-cyan);
+  color: var(--text-muted-color);
   cursor: pointer;
   z-index: 1100;
-  box-shadow: 0 0 18px rgb(34 224 255 / 35%);
 }
+#sb-reopen:hover { color: var(--heading-color); border-color: var(--accent); }
 
 /* ===== 데스크톱(≥850px, Chirpy lg)에서만 3단 동작 ===== */
 @media (min-width: 850px) {
@@ -360,85 +337,75 @@ a:hover { text-shadow: 0 0 10px rgb(34 224 255 / 45%); }
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  #sidebar, #main-wrapper { transition: none !important; }
+}
+
 /* ---------- 상단바 ---------- */
 #topbar-wrapper {
   backdrop-filter: blur(8px);
-  border-bottom: 1px solid rgb(34 224 255 / 14%);
+  border-bottom: 1px solid var(--line-soft);
 }
-#search-result-wrapper .post-content { font-size: 1rem; }
 
-#trending-tags .post-tag,
 .post-tag {
   border: 1px solid var(--tag-border);
-  background: rgb(34 224 255 / 6%);
-  text-transform: lowercase;
-  font-family: var(--mono-font);
+  border-radius: 99px;
+  background: transparent;
 }
-.post-tag:hover { box-shadow: 0 0 12px rgb(34 224 255 / 35%); }
+.post-tag:hover {
+  border-color: var(--accent);
+  color: var(--accent) !important;
+  background: transparent;
+}
 
-/* ---------- 카드 / 목록 ---------- */
+/* ---------- 글 목록 카드 (팩 색 왼쪽 테두리) ---------- */
 .card-wrapper.card,
 #post-list .card {
+  --c: var(--line);
   background: var(--card-bg);
   border: 1px solid var(--card-border-color);
-  border-radius: 4px;
-  position: relative;
+  border-left: 3px solid var(--c);
+  border-radius: 12px;
   overflow: hidden;
-  transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
-}
-#post-list .card::before {
-  content: '';
-  position: absolute;
-  left: 0; top: 0; bottom: 0;
-  width: 2px;
-  background: linear-gradient(180deg, var(--neon-cyan), var(--neon-magenta));
-  opacity: 0.6;
+  transition: border-color 0.2s, transform 0.2s;
 }
 #post-list .card:hover {
-  border-color: var(--neon-cyan);
+  border-color: var(--c);
   transform: translateY(-2px);
-  box-shadow: 0 8px 30px -10px rgb(34 224 255 / 35%);
 }
 .card-wrapper:hover { text-decoration: none; }
+#post-list .cp-trail { color: var(--c); font-weight: 600; }
 
 /* ---------- 코드블록 ---------- */
 .highlight {
   border: 1px solid var(--language-border-color);
-  box-shadow: inset 0 0 24px rgb(34 224 255 / 6%);
+  border-radius: 10px;
 }
 code { font-family: var(--mono-font); }
 
-/* ---------- 페이지 제목 ---------- */
-#page-title,
-h1.dynamic-title { text-shadow: 0 0 22px rgb(34 224 255 / 30%); }
-
-/* ---------- back-to-top / 버튼 ---------- */
+/* ---------- 버튼 ---------- */
 #back-to-top {
-  border: 1px solid var(--neon-cyan) !important;
-  color: var(--neon-cyan) !important;
-  box-shadow: 0 0 16px rgb(34 224 255 / 30%);
+  border: 1px solid var(--line) !important;
+  color: var(--heading-color) !important;
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #0b6b7a, #124a8a);
-  border: 1px solid var(--neon-cyan);
-  color: #eafcff;
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  color: #0d1117;
 }
 .btn-primary:hover {
-  box-shadow: 0 0 18px rgb(34 224 255 / 45%);
-  background: linear-gradient(135deg, #0e8397, #1660b0);
+  background: #b98bff;
+  border-color: #b98bff;
 }
 .btn-outline-primary,
 .btn-outline-secondary {
-  border-color: var(--neon-cyan);
-  color: var(--neon-cyan);
+  border-color: var(--line);
+  color: var(--text-color);
 }
 .btn-outline-primary:hover,
 .btn-outline-secondary:hover {
-  background: rgb(34 224 255 / 15%);
-  color: #eafcff;
-  box-shadow: 0 0 14px rgb(34 224 255 / 35%);
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--heading-color);
 }
-
-/* 링크색 강조가 과한 곳 정리 */
-#core-wrapper a { text-underline-offset: 2px; }

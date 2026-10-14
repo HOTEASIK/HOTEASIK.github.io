@@ -1,6 +1,6 @@
 # HOTEASIK 재구축 설계 — Chirpy 기반
 
-> cotes2020/jekyll-theme-chirpy (gem, `~> 7.6`) 위에 **카드팩 포트폴리오 홈**과 **조합·합성 랩**을 얹는다.
+> cotes2020/jekyll-theme-chirpy (gem, `~> 7.6`) 위에 **카드팩 포트폴리오 홈**과 **카드팩 스킨**을 얹는다.
 > 콘텐츠 모델은 **통합**: 모든 개념·부품·모델·프로젝트가 각각 하나의 글이고,
 > `_posts/<상위팩>/<하위팩>/…/*.md` 의 폴더 구조가 곧 홈의 카드팩 구조다 (10장).
 
@@ -20,30 +20,30 @@
 | `_plugins/posts-lastmod-hook.rb` | Chirpy 표준 (git 기준 최종수정일) |
 | `index.html` | `layout: home` — 홈(카드팩 포트폴리오) |
 | `_data/packs.yml` | 카드팩 아이콘·색·순서·`top` (키 = `_posts` 폴더 이름) |
-| `_tabs/lab.md` | `order: 1` — **조합 & 합성** |
-| `_tabs/blog.md` | `order: 2` — **블로그**(전체 글 목록) |
-| `_tabs/about.md` | `order: 3` — 소개 (선택) |
+| `_tabs/blog.md` | `order: 2` — **블로그**(전체 글 목록, 팩 경로·팩 색 카드) |
+| `_tabs/categories.md` | `order: 4` — 카테고리 |
+| `_tabs/about.md` | `order: 6` — 소개 |
 
 ### 사이드바 네비게이션
 Chirpy 사이드바는 **HOME(→ `/`)** 이 고정으로 있고 그 아래 `_tabs` 를 `order` 순으로 나열한다.
 
 - **홈** = 고정 HOME → `index.html`: 카드팩 포트폴리오 (10장)
-- **조합 & 합성** = `_tabs/lab.md`
 - **블로그** = `_tabs/blog.md`
+- **카테고리** = `_tabs/categories.md`
+- **소개** = `_tabs/about.md`
 
-`categories` / `tags` / `archives` 탭은 만들지 않음(사이드바 최소화). 단, `jekyll-archives` 는
+`tags` / `archives` 탭은 두지 않음(사이드바 최소화). 단, `jekyll-archives` 는
 켜 두어 글 안의 카테고리·태그 링크(`/categories/…`, `/tags/…`)는 살아 있게 한다.
 
 ### 커스텀 레이아웃
 | `_layouts/home.html` | 홈. `layout: default` 확장, 카드팩 컨테이너 + 글/팩 정보 JSON → `cardpack.js` |
-| `_layouts/blog.html` | 블로그. `site.posts` 전체를 최신순 카드 리스트 (초기엔 페이지네이션 없음) |
-| `_layouts/lab.html` | 조합&합성. 부품 대시보드 + 하단 소환식 조합/합성 패널 컨테이너 |
+|---|---|
 
 ---
 
 ## 2. 통합 콘텐츠 모델 — "모든 것이 노트"
 
-`_posts/<팩>/<하위팩>/YYYY-MM-DD-<slug>.md`. Chirpy 표준 frontmatter + **랩 전용 키**
+`_posts/<팩>/<하위팩>/YYYY-MM-DD-<slug>.md`. Chirpy 표준 frontmatter + 분류 키
 (+ 카드팩용 선택 키 `emoji`, `image`, `description`):
 
 ```yaml
@@ -52,122 +52,28 @@ title: 합성곱
 date: 2026-09-04 09:00:00 +0900
 categories: [부품, 은닉층]      # Chirpy 그룹핑
 tags: [conv]
-layer: hidden                   # input | hidden | output | training | concept
+layer: hidden                   # input | hidden | output | training | eval | concept | model | preprocess
 kind: conv                      # 은닉층/학습방법 세부: activation, conv, recurrent,
                                 #   loss, pooling, norm, attention, optimizer, regularization …
-icon: /assets/parts/conv.svg    # 선택 (없으면 기본 톱니)
-combinable: true                # 조합 뷰의 부품으로 노출
-synthesizable: true             # 합성 뷰의 재료로 노출
-weight: 2                       # 대시보드에서 차지하는 상대 비중(은닉층 종류는 크게)
+icon: /assets/parts/conv.svg    # 선택: 카드 아이콘
 ---
 
 본문(마크다운). `[[relu]]` 위키링크 가능.
 ```
 
-- `layer` 값과 개수
-  - `input` (입력층) — 소수
-  - `hidden` (은닉층) — **가장 많음**, `kind` 로 다시 쪼갬 → 대시보드에서 세로 폭 크게
-  - `output` (출력층) — 소수
+- `layer` 값
+  - `input` (입력층) · `hidden` (은닉층, `kind` 로 다시 쪼갬) · `output` (출력층)
   - `training` (학습방법) — 옵티마이저·손실함수·정규화기법·스케줄러 …
-  - `eval` (평가방법) — 분류·회귀·검출·생성 지표. `kind` 로 쪼갬, 대시보드 폭 크게
-  - `concept` — 신경망 층이 아닌 순수 개념(물리, 화학 등). 합성 전용 재료
-  - `model` — 완성된 모델. 조합·합성의 결과 링크 대상
-- 모델(LeNet-5, VLA 등)도 글이며 `layer` 없음, `categories: [모델]`
+  - `eval` (평가방법) — 분류·회귀·검출·생성 지표
+  - `preprocess` (데이터 전처리) · `concept` (순수 개념) · `model` (완성된 모델)
+- 모델(LeNet-5, VLA 등)도 글이며 `categories: [모델]`
+- 기존 글에 남아 있는 `combinable` / `synthesizable` / `weight` 는 구 조합&합성 랩용 키로, 지금은 쓰이지 않음
 
-### Liquid → JS 데이터 전달
-`_layouts/lab.html` 이 빌드시 아래를 JSON 으로 심는다.
+## 3~5. (제거됨) 조합 & 합성 랩
 
-```liquid
-{% assign lab_posts = site.posts | where_exp: "p", "p.combinable or p.synthesizable" %}
-<script type="application/json" id="lab-notes">
-[
-  {% for p in lab_posts %}
-  {"id":"{{ p.slug }}","title":{{ p.title | jsonify }},"url":"{{ p.url | relative_url }}",
-   "layer":"{{ p.layer }}","kind":"{{ p.kind }}","icon":"{{ p.icon | relative_url }}",
-   "combinable":{{ p.combinable | default: false }},"synthesizable":{{ p.synthesizable | default: false }},
-   "weight":{{ p.weight | default: 1 }}}{% unless forloop.last %},{% endunless %}
-  {% endfor %}
-]
-</script>
-{% assign recipes = site.data.recipes | jsonify %}
-{% assign syntheses = site.data.syntheses | jsonify %}
-<script>window.LAB_RECIPES = {{ recipes }}; window.LAB_SYNTH = {{ syntheses }};</script>
-```
-
----
-
-## 3. 조합 뷰 (Combination)
-
-**목표**: 층별로 하위 부품을 넣어 하나의 모델/개념을 출력.
-
-### 레이아웃 (`_layouts/lab.html` 하단, "조합" 버튼으로 소환)
-```
-┌ 부품 대시보드 (리스트) ─────────────────────────┐
-│ 입력층   [input]                                  │
-│ 은닉층   활성화 [relu][gelu…]  합성곱 [conv][inception]  │  ← 세로로 길게
-│          순환 [rnn][lstm]  풀링 [pool][gap]  손실함수 …  │
-│ 출력층   [softmax][linear-out]                    │
-│ 학습방법 [sgd][adam][dropout][batchnorm]          │
-└──────────────────────────────────────────────────┘
-┌ 컨베이어 벨트 (조립대) ───────────────────────────┐
-│  [input] → [conv] → [pool] → [conv] → … → [output]│  ← 드래그해서 순서대로
-└──────────────────────────────────────────────────┘
-        [ ⚙ 제작 ]   [ 초기화 ]
-   결과: ✨ LeNet-5  → (글로 이동)
-```
-
-- 부품 칩을 벨트로 **드래그앤드롭**, 벨트 안에서 순서 이동, 클릭 시 제거
-- `_data/recipes.yml`:
-  ```yaml
-  - id: lenet-5
-    label: LeNet-5
-    sequence: [input, conv, pool, conv, pool, fc, fc, output]   # 글 slug 배열
-    post: lenet-5
-    hint: 입력 → 합성곱 → 풀링 ×2 → 완전연결 ×2 → 출력
-  - id: cnn
-    label: CNN (일반형)
-    loose: [input, conv, pool, fc]        # 이 kind/slug 가 이 순서로 한 번씩 등장하면 인식
-    post: cnn
-  ```
-- 매칭: `sequence` 정확 일치 → 없으면 `loose` 부분수열(각 항목을 slug 또는 `kind` 로 대조)
-- 결과 라벨이 `post` 글로 가는 링크. 그 글 상단에 이 시퀀스가 흐름도로 표시(레이아웃에서 렌더)
-
-## 4. 합성 뷰 (Synthesis)
-
-**목표**: N개 개념을 합쳐 상위 개념 하나 출력. `물리 + 화학 = 물리화학`, `llm + cnn + robotics = vla`.
-
-### 레이아웃 ("합성" 버튼으로 소환)
-```
-┌ 재료 대시보드 (리스트, synthesizable 전부) ───────┐
-│ [물리][화학][생물]  [llm][cnn][robotics][rl] …    │
-└──────────────────────────────────────────────────┘
-┌ 합성 상자 ────────────────┐
-│   [ 물리 ] [ 화학 ]        │  ← 드래그앤드롭, 순서 무관
-└──────────────────────────┘
-        [ ✦ 합성 ]   [ 비우기 ]
-   결과: ✨ 물리화학  → (글로 이동)
-```
-- `_data/syntheses.yml`:
-  ```yaml
-  - id: vla
-    label: VLA
-    inputs: [llm, cnn, robotics]     # 순서 무관 집합
-    post: vla
-  - id: mulli-hwahak
-    label: 물리화학
-    inputs: [physics, chemistry]
-    post: physical-chemistry
-  ```
-- 매칭: 상자 안 slug 집합이 `inputs` 집합과 정확히 일치(옵션 `loose: true` 면 포함)
-- 결과가 `post` 글로 링크
-
-## 5. 랩 엔진 (`assets/js/lab.js`, `assets/css/lab.css`)
-
-- 의존성 없음(vanilla). 구 `factory.js` 의 DnD·인식 로직을 이식
-- `#lab-notes` JSON + `window.LAB_RECIPES` / `window.LAB_SYNTH` 로 동작
-- 대시보드 = 리스트형(칩), `layer` → `kind` 순으로 그룹, `weight` 로 은닉층 강조
-- 하단 "조합" / "합성" 토글 버튼 → 해당 패널을 아래에 펼침(둘 다 열 수 있음)
-- 상태는 페이지 안에서만(새로고침 시 초기화). 결과 링크만 실제 이동
+드래그앤드롭으로 부품을 조합·합성하던 `/lab/` 은 카드팩 리디자인 때 제거했다
+(`_tabs/lab.md`, `_layouts/lab.html`, `assets/{js,css}/lab.*`, `_data/{recipes,syntheses}.yml`).
+git 이력에 남아 있어 복구 가능.
 
 ---
 
@@ -205,6 +111,9 @@ git 이력에 남으므로 복구 가능. (지난 세션 미커밋 작업은 이
 
 카드팩 도입 시: 공장 지도 홈과 `assets/css/factory.css`, `assets/js/factory.js` 제거.
 
+카드팩 스킨 적용 시: 조합 & 합성 랩 전체(3~5장), `_tabs/{archives,tags}.md`,
+오른쪽 패널의 최근 업데이트·인기 태그(빈 include 오버라이드) 제거.
+
 ## 8. 배포 절차 (사용자)
 
 1. GitHub 레포 **Settings → Pages → Source: GitHub Actions**
@@ -212,7 +121,7 @@ git 이력에 남으므로 복구 가능. (지난 세션 미커밋 작업은 이
 3. `main` 에 push → Actions "Build and Deploy" 통과 시 `https://hoteasik.github.io` 반영
 4. 로컬 미리보기(선택): RubyInstaller+DevKit → `gem install bundler` → `bundle` → `bundle exec jekyll s`
 
-## 9. 구현 순서
+## 9. 구현 순서 (초기 재구축 당시 기록 — 랩 관련 항목은 이후 제거됨)
 
 1. Chirpy 골격: `Gemfile`, `_config.yml`, workflow, `.gitignore`, `_plugins/*`
 2. `_data/locales` 는 gem 제공(ko-KR) — 불필요. `_data/{contact,share,recipes,syntheses}.yml`
@@ -295,7 +204,7 @@ _posts/
 - 팩별 글 수(`count`)는 트리 구성 시 한 번만 계산
 
 ### 시각 규칙
-- 다크 패널(`#0d1117` / `#161b22`) + 팩 색 네온 테두리·글로우. 색은 팩(폴더)을 따름
+- 다크 패널(`#0d1117` / `#161b22`) + 팩 색 테두리·글로우. 색은 팩(폴더)을 따름 (사이트 전체 톤은 11장)
 - 막대그래프 막대 색 = 하위 팩 색, 값·라벨은 텍스트 색
 - 카드 아이콘 우선순위: `icon`(SVG) → `emoji` → 팩 아이콘
 - 클래스는 모두 `cp-` 접두어 (Chirpy/Bootstrap 의 `.card`·`.nav`·`.close` 등과 충돌 방지)
@@ -305,3 +214,44 @@ _posts/
 `home.html` 이 빌드 시 `#cardpack-posts`(글 배열) / `#cardpack-meta`(`packs.yml`) JSON 을 심는다.
 글마다 `{t 제목, u URL, d 날짜, f 폴더 배열, tags, x 요약, icon, emoji, img}`.
 `f` 는 `post.path`(`_posts/AI/부품/은닉층/…md`)를 `/` 로 잘라 앞뒤를 뗀 값.
+
+---
+
+## 11. 사이트 스킨 — 카드팩 톤 (`assets/css/jekyll-theme-chirpy.scss`)
+
+**목표**: 홈 밖(글·목록·카테고리·소개)도 카드팩과 같은 톤. 구 사이버펑크(네온 시안/마젠타·격자·스캔라인·Orbitron) 폐기.
+
+### 토큰
+| 용도 | 값 |
+|---|---|
+| 배경 / 사이드바 / 패널 | `#0d1117` / `#010409` / `#161b22` |
+| 테두리 / 약한 테두리 | `#30363d` / `#21262d` |
+| 제목 / 본문 / 보조 | `#e6edf3` / `#c9d1d9` / `#8b949e` |
+| 링크 | `#58a6ff` |
+| 팩 색 (포인트) | ROBOTICS `#ff7b3a` · AI `#a371f7`(기본 강조) · CODING `#3fb950` |
+| 폰트 | Pretendard (jsDelivr CDN, `metadata-hook.html`), 코드 Cascadia Code/Consolas |
+
+- 구 `--neon-cyan/magenta/amber` 는 데이터 전/후 위젯(`data-demo`)용 별칭으로만 유지
+- 강조(`--accent`) = AI 보라. 선택 영역·인용 테두리·활성 메뉴·태그 호버·TOC 하이라이트
+
+### 요소
+```
+┌───────────┬────────────────────────────────────────┐
+│▀▀▀▀▀▀▀▀▀▀▀│ 홈 › 글 제목                 [검색]    │  ← 사이드바 상단 3px 팩 색 그라데이션
+│  (avatar) │────────────────────────────────────────│
+│ HOTEASIK  │ 제목                          │ 목차   │  ← 오른쪽 패널은 목차만
+│ tagline   │ 날짜 · 카테고리               │ ▌항목  │
+│▌홈        │ 본문 …                        │  항목  │  ← 활성 메뉴 = 보라 왼쪽 막대
+│ 블로그    │                                │        │
+│ 카테고리  │ [tag] [tag]                    │        │
+│ 소개      │                                │        │
+│ (gh)(✉)   │                                │        │
+└───────────┴────────────────────────────────────────┘
+```
+- 사이드바: 홈 아이콘 `fa-layer-group`, 메뉴 = 홈 · 블로그 · 카테고리 · 소개
+- 사이드바 접기/펴기(데스크톱 ≥850px): 헤더 버튼 또는 `Ctrl+\` → 펼침 → 아이콘 레일(74px) → 숨김 순환,
+  숨김 시 왼쪽 손잡이로 다시 펼침, 상태는 `localStorage('hoteasik-sb')`
+- 블로그 목록 카드: 둥근 12px, 왼쪽 3px 테두리 = 경로 중 `packs.yml` 색이 있는 가장 깊은 팩 색,
+  메타 앞에 팩 경로(`AI › 부품 › 은닉층`)
+- 태그: 알약형, 호버 시 강조색 테두리·글자
+- h2 아래 얇은 구분선, 코드블록 둥근 10px
