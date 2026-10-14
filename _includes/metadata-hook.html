@@ -14,11 +14,12 @@
 <!-- 3단 사이드바 상태 즉시 복원 (깜빡임 방지) -->
 <script>
   (function () {
+    document.documentElement.setAttribute('data-sb', 'rail');
     try {
       var s = localStorage.getItem('hoteasik-sb');
-      if (s === 'rail' || s === 'hidden' || s === 'expanded') {
-        document.documentElement.setAttribute('data-sb', s);
-      }
+      // 저장값이 없으면 기본 = 접힌 상태(아이콘 레일)
+      if (s !== 'rail' && s !== 'hidden' && s !== 'expanded') s = 'rail';
+      document.documentElement.setAttribute('data-sb', s);
       var w = parseInt(localStorage.getItem('hoteasik-sb-w'), 10);
       if (w >= 180 && w <= 480) {
         document.documentElement.style.setProperty('--sb-exp', w + 'px');
