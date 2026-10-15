@@ -105,16 +105,19 @@
 .cp-pack .name { margin-top: 12px; font-weight: 700; font-size: 20px; letter-spacing: 1px; }
 .cp-pack .count { margin-top: 4px; font-size: 13px; opacity: .8; }
 
-/* ── 손에 편 카드 ── */
-.cp-hand { position: fixed; inset: 0; pointer-events: none; z-index: 1040; }
+/* ── 하단 호 모양으로 편 카드 (많으면 드래그·휠로 돌림) ── */
+.cp-hand { position: absolute; left: 0; right: 0; bottom: 0; height: 330px; overflow: hidden; pointer-events: none; border-radius: 0 0 16px 16px; }
 .cp-card {
-  position: absolute; left: 50%; bottom: -40px; width: 160px; height: 230px; margin-left: -80px;
-  border-radius: 12px; background: var(--panel); cursor: pointer; pointer-events: auto;
+  position: absolute; left: 50%; bottom: 24px; width: 160px; height: 230px; margin-left: -80px;
+  border-radius: 12px; background: var(--panel); cursor: pointer; pointer-events: auto; touch-action: pan-y;
   box-shadow: 0 0 0 2px var(--c), 0 10px 25px rgba(0,0,0,.6);
-  transform-origin: 50% 260%;
-  transition: transform .5s cubic-bezier(.2,.8,.3,1.2), box-shadow .2s;
+  transform-origin: 50% var(--r, 1400px); transform: rotate(var(--a, 0deg));
+  transition: transform .5s cubic-bezier(.2,.8,.3,1.2), box-shadow .2s, opacity .3s;
   padding: 16px; display: flex; flex-direction: column; color: var(--text);
 }
+.cp-card:hover, .cp-card:focus-visible { transform: rotate(var(--a, 0deg)) translateY(-30px) scale(1.06); }
+.cp-card.off { opacity: 0; pointer-events: none; }
+.cp-hand.dragging .cp-card { transition: box-shadow .2s, opacity .3s; cursor: grabbing; }
 .cp-card .tag { font-size: 11px; color: var(--c); font-weight: 700; letter-spacing: 1px; }
 .cp-card .emoji { font-size: 44px; height: 56px; margin: 14px 0 10px; text-align: center; }
 .cp-card .emoji img { height: 100%; }
@@ -158,7 +161,8 @@
   .cp-pack .name { font-size: 16px; }
   .cp.sub .cp-pack { width: 110px; height: 160px; }
   .cp.sub .cp-pack .icon { font-size: 32px; }
-  .cp-card { width: 120px; height: 175px; margin-left: -60px; padding: 10px; }
+  .cp-hand { height: 250px; }
+  .cp-card { width: 120px; height: 175px; margin-left: -60px; padding: 10px; bottom: 16px; }
   .cp-card .emoji { font-size: 32px; height: 40px; margin: 10px 0 6px; }
   .cp-card .title { font-size: 12px; }
   .cp-dashboard { grid-template-columns: repeat(2, 1fr); }

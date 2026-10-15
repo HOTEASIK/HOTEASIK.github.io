@@ -215,6 +215,7 @@
     clearTimeout(pending);
     $hand.innerHTML = "";
     handOpen = false;
+    hand = null;
     const cur = path[path.length - 1];
     updateNav();
     if (cur && !cur.packs) {
@@ -227,20 +228,32 @@
     }
   }
 
-  // ── 손에 편 카드 ──
-  function fanTransform(i, n) {
-    const spread = Math.min(window.innerWidth < 600 ? 9 : 12, 80 / Math.max(n - 1, 1));
-    const angle = (i - (n - 1) / 2) * spread;
-    return `translateY(-${window.innerHeight * 0.18}px) rotate(${angle}deg)`;
+  // ── 하단 호 모양으로 편 카드. 화면에 다 안 들어가면 드래그·휠로 돌림 ──
+  let hand = null;   // { els, rot(가운데 카드 인덱스), unit(카드 1장 이동 px), over(넘침 여부) }
+  function layoutHand() {
+    if (!hand || !hand.els.length) return;
+    const small = window.innerWidth < 600;
+    const R = small ? 1000 : 1400;                               // 호의 반지름
+    const n = hand.els.length;
+    hand.unit = hand.els[0].offsetWidth + (small ? 12 : 20);
+    const step = hand.unit / R * 180 / Math.PI;                  // 카드 사이 각도
+    const maxA = Math.asin(Math.min(1, $hand.clientWidth / 2 / R)) * 180 / Math.PI;
+    const half = Math.max(0, Math.floor((maxA - step / 2) / step));
+    hand.over = n > half * 2 + 1;
+    const min = hand.over ? half : (n - 1) / 2, max = hand.over ? n - 1 - half : (n - 1) / 2;
+    hand.rot = Math.min(max, Math.max(min, hand.rot));
+    $hand.style.setProperty("--r", R + "px");
+    hand.els.forEach((el, i) => {
+      const a = (i - hand.rot) * step;
+      el.style.setProperty("--a", a + "deg");
+      el.classList.toggle("off", Math.abs(a) > maxA + step);
+    });
   }
 
   function openHand(p, r) {
     handOpen = true;
-    const n = p.cards.length;
-    const start = r
-      ? `translate(${r.left + r.width / 2 - window.innerWidth / 2}px, ${r.top - window.innerHeight + 40 + r.height}px) scale(.6)`   // 팩 위치에서 시작
-      : "translateY(300px) scale(.6)";
-    p.cards.forEach((c, i) => {
+    const hr = $hand.getBoundingClientRect();
+    const els = p.cards.map((c, i) => {
       const el = document.createElement("div");
       el.className = "cp-card";
       el.tabIndex = 0;
@@ -249,22 +262,70 @@
       el.style.setProperty("--c", p.color);
       el.innerHTML = `<div class="tag">${esc(p.name)}</div><div class="emoji">${cardIcon(c, p)}</div>
         <div class="title">${esc(c.t)}</div><div class="sub">${esc(c.tags.slice(0, 2).join(" · ") || c.d)}</div>`;
-      el.style.transform = start;
       el.style.zIndex = i;
-      el.onmouseenter = el.onfocus = () => el.style.transform = fanTransform(i, n) + " translateY(-40px) scale(1.08)";
-      el.onmouseleave = el.onblur = () => el.style.transform = fanTransform(i, n);
+      el.onfocus = () => { if (hand && hand.over && el.matches(":focus-visible")) { hand.rot = i; layoutHand(); } };   // 키보드 이동 시 돌려서 보이게
       el.onclick = () => openCard(c, p);
       $hand.appendChild(el);
-      setTimeout(() => { if (el.isConnected) el.style.transform = fanTransform(i, n); }, dur(60 + i * 80));   // 순서대로 펼침
+      return el;
+    });
+    hand = { els, rot: 0 };
+    layoutHand();
+    els.forEach((el, i) => {
+      el.style.transition = "none";
+      el.style.transform = r   // 팩 위치에서 시작
+        ? `translate(${r.left + r.width / 2 - (hr.left + hr.width / 2)}px, ${r.top + r.height / 2 - (hr.bottom - el.offsetHeight / 2 - 24)}px) scale(.6)`
+        : "translateY(300px) scale(.6)";
+    });
+    void $hand.offsetWidth;
+    els.forEach((el, i) => {
+      el.style.transition = "";
+      setTimeout(() => { if (el.isConnected) el.style.transform = ""; }, dur(60 + i * 80));   // 순서대로 펼침
     });
   }
 
   function closeHand() {
     handOpen = false;
+    hand = null;
     const cards = $hand.querySelectorAll(".cp-card");
     cards.forEach(el => el.style.transform = "translateY(300px) scale(.6)");
     setTimeout(() => cards.forEach(el => el.remove()), dur(400));
   }
+
+  // 카드 돌리기: 드래그(마우스·터치) · 휠
+  let hDrag = null, hMoved = false, wheelAt = 0;
+  $hand.addEventListener("pointerdown", e => {
+    hMoved = false;
+    if (!hand || !hand.over || (e.pointerType === "mouse" && e.button !== 0)) return;
+    hDrag = { x: e.clientX, rot: hand.rot };
+  });
+  window.addEventListener("pointermove", e => {
+    if (!hDrag || !hand) return;
+    const dx = e.clientX - hDrag.x;
+    if (!hMoved && Math.abs(dx) < 6) return;
+    if (!hMoved) { hMoved = true; $hand.classList.add("dragging"); }
+    hand.rot = hDrag.rot - dx / hand.unit;
+    layoutHand();
+  });
+  const endHandDrag = () => {
+    if (!hDrag) return;
+    hDrag = null;
+    if (!hMoved) return;
+    $hand.classList.remove("dragging");
+    if (hand) { hand.rot = Math.round(hand.rot); layoutHand(); }
+    setTimeout(() => hMoved = false, 0);      // 드래그 직후 click 은 무시
+  };
+  window.addEventListener("pointerup", endHandDrag);
+  window.addEventListener("pointercancel", endHandDrag);
+  $hand.addEventListener("click", e => { if (hMoved) { e.stopPropagation(); e.preventDefault(); } }, true);
+  $hand.addEventListener("wheel", e => {
+    if (!hand || !hand.over) return;
+    e.preventDefault();
+    const now = Date.now();
+    if (now - wheelAt < 120) return;
+    wheelAt = now;
+    hand.rot = Math.round(hand.rot) + Math.sign(e.deltaX || e.deltaY);
+    layoutHand();
+  }, { passive: false });
 
   // ── 카드 상세 ──
   function openCard(c, p) {
@@ -383,9 +444,7 @@
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => {
       if (!$packs.classList.contains("hidden")) updateCarousel();
-      if (!handOpen) return;
-      const cards = $hand.querySelectorAll(".cp-card");
-      cards.forEach((el, i) => el.style.transform = fanTransform(i, cards.length));
+      layoutHand();
     }, 150);
   });
 
