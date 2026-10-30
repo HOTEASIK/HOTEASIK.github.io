@@ -11,10 +11,23 @@ layout: default
     <div class="cp-crumb" id="cp-crumb"></div>
   </div>
 
-  <div class="cp-head">
-    <h1>{{ site.title }}</h1>
-    <p>Robot Developer · 카드팩을 열어 프로젝트를 확인하세요</p>
-  </div>
+  <header class="cp-head">
+    <div class="cp-hero-copy">
+      <span class="cp-kicker"><span class="cp-pulse"></span> ROBOTICS · AI · SOFTWARE</span>
+      <h1>아이디어를 움직이는<br><span>로봇 개발 노트</span></h1>
+      <p>HOTEASIK의 프로젝트와 공부 기록을 분야별 카드팩으로 모았습니다.<br class="cp-desktop-break"> 궁금한 주제를 열어 설계부터 구현까지 함께 살펴보세요.</p>
+      <div class="cp-hero-actions">
+        <a class="cp-primary" href="#cp-packs-wrap">분야 둘러보기 <span aria-hidden="true">↓</span></a>
+        <a class="cp-secondary" href="{{ '/blog/' | relative_url }}">전체 글 보기 <span aria-hidden="true">↗</span></a>
+      </div>
+    </div>
+    <div class="cp-hero-mark" aria-hidden="true">
+      <span class="cp-orbit cp-orbit-one"></span><span class="cp-orbit cp-orbit-two"></span>
+      <span class="cp-core">H<span>.</span></span><i class="cp-node cp-node-one"></i><i class="cp-node cp-node-two"></i><i class="cp-node cp-node-three"></i>
+      <span class="cp-mark-caption">BUILD · LEARN · REPEAT</span>
+    </div>
+  </header>
+  <div class="cp-section-label"><span>EXPLORE THE LIBRARY</span><span class="cp-section-line"></span><span>01 / 03</span></div>
   <div class="cp-level-title" id="cp-level-title"></div>
   <section class="cp-dashboard" id="cp-dashboard"></section>
   <div class="cp-packs-wrap" id="cp-packs-wrap">

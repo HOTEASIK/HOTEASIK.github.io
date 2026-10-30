@@ -18,6 +18,36 @@
 .cp-head { text-align: center; }
 .cp-head h1 { margin: 0; font-size: 28px; letter-spacing: 2px; color: var(--text); }
 .cp-head p { margin: 6px 0 0; color: var(--muted); }
+.cp-head {
+  position: relative; width: min(1120px, 100%); min-height: 300px; margin: 34px auto 10px; padding: 34px 6% 30px;
+  display: flex; align-items: center; justify-content: space-between; text-align: left; overflow: hidden;
+  border: 1px solid rgba(139,148,158,.16); border-radius: 22px;
+  background: linear-gradient(105deg, rgba(22,27,34,.96) 0%, rgba(22,27,34,.82) 55%, rgba(22,27,34,.32) 100%);
+  box-shadow: 0 24px 70px rgba(0,0,0,.18);
+}
+.cp-hero-copy { position: relative; z-index: 1; max-width: 650px; }
+.cp-kicker { display: inline-flex; align-items: center; gap: 9px; color: #8b949e; font-size: 11px; font-weight: 700; letter-spacing: 2px; }
+.cp-pulse { width: 7px; height: 7px; border-radius: 50%; background: #3fb950; box-shadow: 0 0 12px #3fb950; }
+.cp-head h1 { margin: 18px 0 12px; font-size: clamp(34px, 4.4vw, 54px); line-height: 1.16; letter-spacing: -1.7px; font-weight: 800; }
+.cp-head h1 span { color: #a371f7; }
+.cp-head p { margin: 0; color: #a8b2bf; font-size: 15px; line-height: 1.85; }
+.cp-hero-actions { display: flex; align-items: center; gap: 18px; margin-top: 24px; }
+.cp-hero-actions a { font-size: 13px; font-weight: 700; text-decoration: none; }
+.cp-primary { display: inline-flex; align-items: center; gap: 12px; padding: 11px 16px; color: #fff !important; border-radius: 8px; background: #8957e5; box-shadow: 0 8px 24px rgba(137,87,229,.24); transition: transform .2s, background .2s; }
+.cp-primary:hover { transform: translateY(-2px); background: #a371f7; }
+.cp-secondary { color: #c9d1d9; }
+.cp-secondary:hover { color: #fff; }
+.cp-hero-mark { position: relative; flex: 0 0 250px; height: 220px; margin: 0 2% 0 24px; display: grid; place-items: center; opacity: .85; }
+.cp-orbit { position: absolute; width: 180px; height: 180px; border: 1px solid rgba(163,113,247,.38); border-radius: 50%; transform: rotate(-28deg) scaleY(.56); }
+.cp-orbit-two { width: 150px; height: 150px; transform: rotate(52deg) scaleY(.58); border-color: rgba(88,166,255,.32); }
+.cp-core { display: grid; place-items: center; width: 82px; height: 82px; border: 1px solid rgba(163,113,247,.75); border-radius: 24px; color: #e6edf3; font-size: 32px; font-weight: 800; background: linear-gradient(145deg,#29213b,#161b22); box-shadow: 0 0 48px rgba(163,113,247,.2); transform: rotate(-8deg); }
+.cp-core span { color: #a371f7; }
+.cp-node { position: absolute; width: 10px; height: 10px; border: 2px solid #0d1117; border-radius: 50%; background: #58a6ff; box-shadow: 0 0 12px currentColor; }
+.cp-node-one { top: 35px; left: 56px; color: #58a6ff; }.cp-node-two { right: 42px; top: 92px; color: #a371f7; background: #a371f7; }.cp-node-three { bottom: 38px; left: 91px; color: #3fb950; background: #3fb950; }
+.cp-mark-caption { position: absolute; bottom: 2px; color: #6e7681; font: 9px/1 monospace; letter-spacing: 2px; }
+.cp-section-label { width: min(1060px,100%); display: flex; align-items: center; gap: 14px; margin: 24px auto 0; color: #6e7681; font: 10px/1.4 monospace; letter-spacing: 1.5px; }
+.cp-section-line { height: 1px; flex: 1; background: linear-gradient(90deg,#30363d,transparent); }
+.cp.sub .cp-head, .cp.sub .cp-section-label { display: none; }
 .cp-level-title { text-align: center; margin-top: 20px; font-size: 22px; font-weight: 700; min-height: 30px; }
 
 /* ── 대시보드 (하위 팩 화면 상단) ── */
@@ -154,6 +184,14 @@
 .cp-close { position: absolute; top: 14px; right: 16px; background: none; border: 0; color: var(--muted); font-size: 22px; cursor: pointer; }
 
 @media (max-width: 600px) {
+  .cp-head { min-height: 0; margin: 18px auto 4px; padding: 26px 22px 28px; border-radius: 16px; }
+  .cp-head h1 { font-size: 34px; letter-spacing: -1.2px; }
+  .cp-head p { font-size: 13px; }
+  .cp-desktop-break, .cp-hero-mark { display: none; }
+  .cp-kicker { font-size: 9px; letter-spacing: 1.4px; }
+  .cp-hero-actions { margin-top: 20px; gap: 14px; }
+  .cp-hero-actions a { font-size: 12px; }
+  .cp-section-label { margin-top: 20px; }
   .cp-packs { --pw: 130px; gap: 24px; padding-top: 24px; }
   .cp.sub .cp-packs { --pw: 110px; }
   .cp-pack { width: 130px; height: 190px; }

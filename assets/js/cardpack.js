@@ -3,6 +3,14 @@
   const $root = document.getElementById("cardpack");
   if (!$root) return;
 
+  const exploreLink = $root.querySelector(".cp-primary");
+  exploreLink?.addEventListener("click", event => {
+    const target = document.getElementById("cp-packs-wrap");
+    if (!target) return;
+    event.preventDefault();
+    target.scrollIntoView({ behavior: "smooth", block: "center" });
+  });
+
   const $wrap = document.getElementById("cp-packs-wrap");
   const $packs = document.getElementById("cp-packs");
   const $hand = document.getElementById("cp-hand");
