@@ -19,6 +19,7 @@
    ============================================================ */
 
 :root,
+:root[data-bs-theme='dark'],
 html[data-mode='dark'],
 html:not([data-mode]) {
   /* -- 카드팩 토큰 -- */
@@ -32,7 +33,7 @@ html:not([data-mode]) {
   --line: #30363d;
   --line-soft: #21262d;
   --ui-font: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', ui-sans-serif, system-ui, sans-serif;
-  --mono-font: 'Cascadia Code', ui-monospace, Consolas, monospace;
+  --mono-font: 'JetBrains Mono', ui-monospace, Consolas, 'Pretendard', monospace;
   /* 데이터 전/후 위젯(data-demo)이 쓰는 이전 토큰 → 새 팔레트로 연결 */
   --neon-cyan: #58a6ff;
   --neon-magenta: var(--pack-ai);
@@ -180,12 +181,28 @@ h1, h2, h3, h4, h5,
   font-weight: 700;
 }
 
-.post-content h2 {
-  padding-bottom: 0.4rem;
-  border-bottom: 1px solid var(--line-soft);
+/* 글 본문: 한 줄 40~45자, 어절 단위 줄바꿈 */
+article[data-toc] > .content {
+  max-width: 46rem;
+  line-height: 1.85;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+
+  h2, h3, h4 { scroll-margin-top: 5rem; }
+
+  h2 {
+    margin-top: 2.5em;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--line-soft);
+    font-size: 1.5rem;
+  }
+
+  h3 { margin-top: 1.8em; font-size: 1.25rem; }
+
+  h4 { font-size: 1.05rem; font-weight: 600; color: var(--text-muted-highlight-color); }
 }
 
-#core-wrapper .post-content { line-height: 1.85; }
+article[data-toc] > header h1 { font-size: 2rem; font-weight: 800; }
 
 a { text-decoration-color: var(--link-underline-color); }
 #core-wrapper a { text-underline-offset: 3px; }
@@ -402,8 +419,86 @@ html.sb-dragging {
 
 /* ---------- 상단바 ---------- */
 #topbar-wrapper {
+  position: sticky;
+  top: 0;
+  z-index: 1010;
+  background: var(--topbar-bg);
   backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--line-soft);
+  transition: transform 0.2s ease;
+
+  /* 모바일: 아래로 스크롤하면 숨김 (assets/js/ux.js) */
+  &.topbar-hidden { transform: translateY(-100%); }
+}
+
+/* ---------- 검색 결과 ---------- */
+#search-results {
+  mark {
+    padding: 0 0.1em;
+    border-radius: 3px;
+    background: var(--accent-soft);
+    color: var(--heading-color);
+  }
+
+  article.search-active {
+    outline: 1px solid var(--accent);
+    outline-offset: 4px;
+    border-radius: 6px;
+  }
+
+  .search-suggest {
+    width: 100%;
+    margin-top: 1rem;
+
+    h3 { font-size: 1rem; }
+  }
+}
+
+/* ---------- 블로그 필터 ---------- */
+#post-filter {
+  margin-bottom: 1.5rem;
+
+  .filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .filter-label {
+    min-width: 2.5rem;
+    color: var(--text-muted-color);
+    font-size: 0.85rem;
+  }
+
+  .filter-foot {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--text-muted-color);
+    font-size: 0.85rem;
+  }
+
+  button {
+    border: 1px solid var(--line);
+    border-radius: 99px;
+    background: transparent;
+    color: var(--text-color);
+    font-size: 0.85rem;
+    padding: 0.15rem 0.7rem;
+
+    &[aria-pressed='true'] { border-color: var(--accent); background: var(--accent-soft); color: var(--heading-color); }
+    &:disabled { opacity: 0.35; cursor: default; }
+    &.filter-clear { border-color: transparent; color: var(--link-color); }
+  }
+}
+
+#post-list h2.card-title {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 1.25rem;
 }
 
 .post-tag {
@@ -440,7 +535,108 @@ html.sb-dragging {
   border: 1px solid var(--language-border-color);
   border-radius: 10px;
 }
-code { font-family: var(--mono-font); }
+code, pre, .highlight code { font-family: var(--mono-font); }
+.highlight { overscroll-behavior-x: contain; }
+.highlight code { font-size: 0.875rem; line-height: 1.6; }
+p code, li code { padding: 0.1em 0.35em; font-size: 0.9em; word-break: break-word; }
+
+/* 코드 줄바꿈 토글, 강조 줄 (assets/js/ux.js) */
+.code-wrap-toggle {
+  margin-left: auto;
+  margin-right: 0.5rem;
+  color: var(--code-header-text-color);
+  cursor: pointer;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  word-break: keep-all;
+
+  &[aria-pressed='true'] { color: var(--accent); }
+}
+
+/* 버튼이 늘어나 언어 라벨을 왼쪽에 고정한다 (테마의 점 3개는 라벨과 겹친다) */
+.code-header {
+  &::before { display: none !important; }
+  span { margin-left: 0 !important; }
+}
+
+.code-wrap {
+  .highlight td.rouge-gutter { display: none !important; }
+  pre { white-space: pre-wrap; word-break: break-word; }
+  .code-line-mark { display: none; }
+}
+
+.rouge-code pre { position: relative; }
+
+.code-line-mark {
+  position: absolute;
+  left: -0.5rem;
+  right: 0;
+  border-left: 2px solid var(--accent);
+  background: var(--accent-soft);
+  pointer-events: none;
+}
+
+@media (max-width: 600px) {
+  .highlight td.rouge-gutter { display: none !important; }
+}
+
+/* 터치 기기에서는 제목 옆 # 앵커를 숨긴다 */
+@media (hover: none) {
+  article[data-toc] > .content .anchor { display: none; }
+}
+
+/* ---------- 집중 모드 (assets/js/ux.js) ---------- */
+#focus-toggle {
+  position: fixed;
+  right: 1rem;
+  bottom: 8rem;
+  z-index: 1020;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--panel-bg);
+  color: var(--heading-color);
+
+  &:hover { border-color: var(--accent); }
+}
+
+body:has(#search-result-wrapper:not(.d-none)) #focus-toggle { display: none; }
+
+#read-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1030;
+  display: none;
+  width: 100%;
+  height: 3px;
+  background: var(--accent-line);
+  transform-origin: left;
+}
+
+@keyframes read-progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+html[data-focus] {
+  #sidebar, #topbar-wrapper, #panel-wrapper, #tail-wrapper, #sb-resizer, #sb-reopen,
+  .post-tail-wrapper, article[data-toc] > header .post-meta, footer { display: none !important; }
+
+  #main-wrapper { margin-left: 0 !important; }
+  .row > main { flex: 0 0 100%; max-width: 100%; }
+
+  article[data-toc] {
+    max-width: 40rem;
+    margin: 3rem auto;
+  }
+
+  #read-progress {
+    display: block;
+    animation: read-progress linear both;
+    animation-timeline: scroll(root);
+  }
+
+  #focus-toggle { color: var(--accent); }
+}
 
 /* ---------- 버튼 ---------- */
 #back-to-top {

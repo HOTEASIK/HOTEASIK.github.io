@@ -143,6 +143,7 @@ exclude:
   - docs
   - tools
   - README.md
+  - DESIGN.md
   - REDESIGN.md
   - IMPROVEMENTS.md
   - LICENSE

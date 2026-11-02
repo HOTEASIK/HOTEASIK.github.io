@@ -1,10 +1,12 @@
 <!-- HOTEASIK · custom metadata hook (injected at end of <head> by Chirpy) -->
 
+<link rel="alternate" type="application/atom+xml" title="{{ site.title }}" href="{{ '/feed.xml' | relative_url }}">
+
 <!-- 본문 폰트 (한글 지원) -->
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+  href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css"
 >
 
 <!-- 데이터 전처리 전/후 위젯 (전역 로드. 글에서는 data-demo.html include 로 소환) -->
@@ -17,7 +19,7 @@
     document.documentElement.setAttribute('data-sb', 'rail');
     try {
       var s = localStorage.getItem('hoteasik-sb');
-      // 저장값이 없으면 기본 = 접힌 상태(아이콘 레일)
+      /* 저장값이 없으면 기본 = 접힌 상태(아이콘 레일) */
       if (s !== 'rail' && s !== 'hidden' && s !== 'expanded') s = 'rail';
       document.documentElement.setAttribute('data-sb', s);
       var w = parseInt(localStorage.getItem('hoteasik-sb-w'), 10);
@@ -30,3 +32,6 @@
 
 <!-- 3단 사이드바 토글 동작 (모든 페이지) -->
 <script defer src="{{ '/assets/js/sidebar-collapse.js' | relative_url }}"></script>
+
+<!-- 상단바 숨김, 코드 줄바꿈, 집중 모드 -->
+<script defer src="{{ '/assets/js/ux.js' | relative_url }}"></script>
