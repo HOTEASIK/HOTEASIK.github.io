@@ -145,7 +145,7 @@
   transition: transform .5s cubic-bezier(.2,.8,.3,1.2), box-shadow .2s, opacity .3s;
   padding: 16px; display: flex; flex-direction: column; color: var(--text);
 }
-.cp-card:hover, .cp-card:focus-visible { transform: rotate(var(--a, 0deg)) translateY(-30px) scale(1.06); }
+.cp-card:hover, .cp-card:focus-visible { transform: rotate(var(--a, 0deg)) translateY(calc((var(--r, 1400px) - 100%) * .06 - 30px)) scale(1.06); }   /* 회전축이 멀어 scale만큼 위로 밀리는 양을 상쇄 */
 .cp-card.off { opacity: 0; pointer-events: none; }
 .cp-hand.dragging .cp-card { transition: box-shadow .2s, opacity .3s; cursor: grabbing; }
 .cp-card .tag { font-size: 11px; color: var(--c); font-weight: 700; letter-spacing: 1px; }
