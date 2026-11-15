@@ -8,6 +8,9 @@ _etc:     { name: "기타", icon: "🗂️" }
 ROBOTICS: { icon: "🤖", color: "#ff7b3a", order: 1, top: true }
 AI:       { icon: "🧠", color: "#a371f7", order: 2, top: true }
 CODING:   { icon: "💻", color: "#3fb950", order: 3, top: true }
+ROS2:     { icon: "🐢", color: "#22a2c9", order: 4, top: true }
+DB:       { icon: "🗄️", color: "#e3b341", order: 5, top: true }
+DevOps:   { icon: "🐳", color: "#2496ed", order: 6, top: true }
 
 부품:     { icon: "⚙️", color: "#c297ff", order: 1 }
 모델:     { icon: "🏭", color: "#8b5cf6", order: 2 }
