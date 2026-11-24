@@ -1,10 +1,10 @@
 ---
-title: RetinaNet(언급)
+title: RetinaNet
 date: 2026-11-05 12:00:00 +0900
 categories: [AI, 객체검출]
 tags: [객체검출, OneStage, FocalLoss, AI응용]
 ---
-# RetinaNet(언급)
+# RetinaNet
 
 ## 정의·핵심
 - **정의**: RetinaNet (2017, Lin et al., FAIR). **Focal Loss**를 제안해 One-Stage 검출기의 고질적인 **전경·배경 극심한 불균형** 문제를 해결하고, **처음으로 Two-Stage 수준의 정확도**를 낸 One-Stage 검출기 (대학원교안 YOLO v3 성능 비교에서 언급: YOLOv3-608 33.0% mAP·51ms vs RetinaNet 32.5%·73ms)

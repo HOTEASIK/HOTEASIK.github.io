@@ -1,10 +1,10 @@
 ---
-title: Autoregressive 모델(언급)
+title: Autoregressive 모델
 date: 2026-11-05 12:00:00 +0900
 categories: [AI, 생성모델·응용]
 tags: [생성모델, 자기회귀, 언어모델, AI응용]
 ---
-# Autoregressive 모델(언급)
+# Autoregressive 모델
 
 ## 정의·핵심
 - **정의**: 데이터를 순서 있는 원소 `x_1, x_2, …, x_n` 으로 보고, **이전 원소들로 다음 원소의 확률**을 예측하는 생성 모델. 보충 생성형 AI 2주차 분류에서 **잠재변수를 쓰지 않는** 생성 모델로 언급

@@ -47,5 +47,9 @@ print(np.abs(X_te_s.mean(0)).max() < 0.3)               # True  테스트는 근
 print(np.allclose(scaler.inverse_transform(X_te_s), X_te))      # True
 ```
 
+## 처리 전후 비교
+
+{% include data-demo.html type="feature-scaling" %}
+
 ## 관련 개념
 [[데이터 누수(Data Leakage)]] · [[정규화(Normalize)]] · [[train·val·test 분할]] · [[경사하강법(GD)]] · [[scikit-learn]]

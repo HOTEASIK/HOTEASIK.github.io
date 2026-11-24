@@ -51,5 +51,9 @@ tr, va = random_split(ds, [400, 100], generator=torch.Generator().manual_seed(42
 print(len(tr), len(va))                                      # 400 100
 ```
 
+## 처리 전후 비교
+
+{% include data-demo.html type="split" %}
+
 ## 관련 개념
 [[stratify]] · [[데이터 누수(Data Leakage)]] · [[Early Stopping]] · [[과적합(Overfitting)]] · [[재현성]] · [[scikit-learn]]
