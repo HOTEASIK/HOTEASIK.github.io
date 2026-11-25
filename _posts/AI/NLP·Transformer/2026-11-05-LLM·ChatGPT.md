@@ -53,5 +53,14 @@ for name, b in [("BERT-base", 0.11), ("GPT-2", 1.5), ("Polyglot-ko", 12.8), ("GP
 print(mem_gb(12.8, 0.5))                            # 6.4  4bit 양자화 시 (QLoRA 등)
 ```
 
+## 생성 원리
+
+1. 문장을 토큰으로 나누고 벡터로 바꾼다.
+2. [[Self-Attention]] 층을 여러 번 거치며 토큰끼리의 관계를 반영한다.
+3. 다음 토큰의 확률 분포를 낸다.
+4. 하나를 골라 입력 뒤에 붙이고 다시 예측한다.
+
+학습은 정답 토큰과의 [[CrossEntropyLoss]]를 줄이는 방향으로 하고, 예측력은 [[perplexity]]로 본다.
+
 ## 관련 개념
 [[GPT]] · [[In-context Learning]] · [[LoRA]] · [[NLU vs NLG]] · [[PLM·Pre-training·Fine-tuning]] · [[임베딩]]

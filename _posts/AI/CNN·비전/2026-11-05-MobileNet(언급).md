@@ -1,10 +1,10 @@
 ---
-title: MobileNet(언급)
+title: MobileNet
 date: 2026-11-05 12:00:00 +0900
 categories: [AI, CNN·비전]
 tags: [CNN비전, CNN, 아키텍처, 경량화]
 ---
-# MobileNet(언급)
+# MobileNet
 
 ## 정의·핵심
 - **정의**: Google의 **모바일·임베디드용 경량 CNN** (2017~). 정확도를 조금 양보하고 **파라미터·연산량을 크게 줄여** 휴대폰·로봇·엣지 기기에서 실시간 추론 (강의에서는 경량 모델 예로 언급)

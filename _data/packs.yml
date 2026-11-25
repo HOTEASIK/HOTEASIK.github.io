@@ -12,14 +12,6 @@ ROS2:     { icon: "🐢", color: "#22a2c9", order: 4, top: true }
 DB:       { icon: "🗄️", color: "#e3b341", order: 5, top: true }
 DevOps:   { icon: "🐳", color: "#2496ed", order: 6, top: true }
 
-부품:     { icon: "⚙️", color: "#c297ff", order: 1 }
-모델:     { icon: "🏭", color: "#8b5cf6", order: 2 }
-개념:     { icon: "💡", color: "#d2a8ff", order: 3 }
-메타:     { icon: "📌", color: "#6e7681", order: 9 }
-
-입력층:   { icon: "📥", color: "#58a6ff", order: 1 }
-전처리층: { icon: "🧹", color: "#3fb950", order: 2 }
-은닉층:   { icon: "🧩", color: "#a371f7", order: 3 }
-출력층:   { icon: "📤", color: "#f778ba", order: 4 }
-학습방법: { icon: "🏋️", color: "#ffb020", order: 5 }
-평가방법: { icon: "📏", color: "#ff7b3a", order: 6 }
+PROJECT:  { icon: "🛠️", color: "#f0883e", order: 7, top: true }
+SCIENCE:  { icon: "🔬", color: "#56d364", order: 8, top: true }
+과제·시험: { icon: "📝", color: "#8b949e", order: 9, top: true }
